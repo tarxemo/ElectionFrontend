@@ -18,6 +18,7 @@ import { ComparativeBarChart } from '../components/charts/ComparativeBarChart';
 import { RadialBarChartComponent } from '../components/charts/RadialBarChart';
 import { StackedBarChart } from '../components/charts/StackedBarChart';
 import { TimeSeriesLineChart } from '../components/charts/TimeSeriesLineChart';
+import Navbar from '../components/Navbar';
 
 
 const CollegeDetailsPage: React.FC = () => {
@@ -109,7 +110,8 @@ const CollegeDetailsPage: React.FC = () => {
   })) || [];
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen">
+    <div className="bg-gray-900 min-h-screen">
+      <Navbar />
       {/* College Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-[#FFE31A]">{college.name}</h1>

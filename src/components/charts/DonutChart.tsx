@@ -15,7 +15,7 @@ interface DonutChartProps {
 }
 
 export const DonutChart: React.FC<DonutChartProps> = ({
-  data,
+  data = [],
   title,
   colors = COLORS,
   innerRadius = 70,
@@ -37,9 +37,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           animationDuration={1500}
           animationBegin={0}
         >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-          ))}
+   {Array.isArray(data) && data.map((entry, index) => (
+  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+))}
+
         </Pie>
         <Tooltip 
           contentStyle={{ 

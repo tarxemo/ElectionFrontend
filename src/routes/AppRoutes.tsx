@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
+// import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -8,13 +8,18 @@ import ContactUsPage from '../pages/ContactUsPage';
 import AdminHomepage from '../pages/AdminHomepage';
 import CollegeListPage from '../pages/CollegeListPage';
 import CollegeDetailsPage from '../pages/CollegeDetailsPage';
+import ElectionsListPage from '../pages/ElectionsListPage';
+import ElectionDetailsPage from '../pages/ElectionDetailsPage';
+import WonLeadersPage from '../pages/WonLeadersPage';
+import LandingPage from '../pages/LandingPage';
+import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/contact-us" element={<ContactUsPage />} />
         <Route path="/admin" element={<AdminHomepage />} />
@@ -23,6 +28,15 @@ const AppRoutes = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/college-list" element={<CollegeListPage />} />
         <Route path='/college/:collegeId' element={< CollegeDetailsPage/>}/>
+
+        <Route path="/election-list" element={<ElectionsListPage />} />
+        <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
+        
+        <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
+
+
+        <Route path="/leader-list" element={<LeadersDashboardPage />} />
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

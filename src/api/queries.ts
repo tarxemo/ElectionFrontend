@@ -371,3 +371,93 @@ export const GET_ELECTION_DETAILS = gql`
     }
   }
 `;
+
+
+// Won leaders query
+export const GET_WON_LEADERS = gql`
+  query WonLeaders($electionId: ID!, $collegeId: ID) {
+    wonLeaders(electionId: $electionId, collegeId: $collegeId) {
+      id
+      student {
+        user {
+          username
+          firstName
+          lastName
+        }
+      }
+      position {
+        id
+        name
+      }
+      voteCount
+    }
+  }
+`;
+
+// Hostel leader stats query
+export const GET_HOSTEL_LEADER_STATS = gql`
+  query HostelLeaderStats($hostelId: ID!) {
+    hostelLeaderStats(hostelId: $hostelId) {
+      studentUsername
+      positionName
+      voteCount
+      avgRating
+    }
+  }
+`;
+
+export const GET_ELECTION_STATS = gql`
+  query ElectionStats {
+    electionStats {
+      activeElections
+      totalVotes
+      registeredVoters
+      totalCandidates
+      participationRate
+    }
+  }
+`;
+
+export const GET_ALL_WON_LEADERS = gql`
+  query GetAllWonLeaders($filters: LeaderFilters) {
+    allWonLeaders(filters: $filters) {
+      leaders {
+        id
+        student {
+          user {
+            username
+            firstName
+            lastName
+          }
+          college {
+            id
+            name
+          }
+          hostel {
+            name
+          }
+        }
+        position {
+          id
+          name
+          level
+        }
+        voteCount
+        rating
+        promisesCompleted
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_LEADER_STATS = gql`
+  query GetLeaderStats {
+    leaderStats {
+      totalLeaders
+      avgRating
+      avgPromiseCompletion
+      totalPositions
+    }
+  }
+`;

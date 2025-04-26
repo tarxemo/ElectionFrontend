@@ -13,6 +13,7 @@ import { DonutChart } from '../components/charts/DonutChart';
 import { ComparativeBarChart } from '../components/charts/ComparativeBarChart';
 import { StackedBarChart } from '../components/charts/StackedBarChart';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 const CollegeListPage: React.FC = () => {
   const { data: collegesData, loading: collegesLoading, error: collegesError } = useQuery(GET_COLLEGE_LIST);
@@ -61,7 +62,8 @@ const CollegeListPage: React.FC = () => {
   })) || [];
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="bg-gray-900 min-h-screen">
+      <Navbar />
       <h1 className="text-[#FFE31A] text-3xl">Colleges Overview</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
