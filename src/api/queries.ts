@@ -461,3 +461,72 @@ export const GET_LEADER_STATS = gql`
     }
   }
 `;
+
+
+export const GET_ALL_POSITIONS = gql`
+  query GetAllPositions(
+    $filters: PositionFilterInput
+    $first: Int
+    $skip: Int
+  ) {
+    allPositions(
+      filters: $filters
+      first: $first
+      skip: $skip
+    ) {
+      id
+      name
+      description
+      level {
+        level
+      }
+      institution {
+        id
+        name
+        level {
+          level
+        }
+        parent {
+          id
+          name
+        }
+      }
+      electionCount
+      candidateCount
+    }
+  }
+`;
+
+export const GET_POSITION_STATS = gql`
+  query GetPositionStats {
+    positionStats {
+      level
+      count
+      withElections
+      withCandidates
+    }
+  }
+`;
+
+export const GET_INSTITUTIONS_BY_LEVEL = gql`
+  query GetInstitutionsByLevel($level: String!) {
+    institutionsByLevel(level: $level) {
+      id
+      name
+      parent {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ACADEMIC_YEARS = gql`
+  query GetAcademicYears {
+    academicYears {
+      id
+      name
+      isCurrent
+    }
+  }
+`;

@@ -13,6 +13,7 @@ import ElectionDetailsPage from '../pages/ElectionDetailsPage';
 import WonLeadersPage from '../pages/WonLeadersPage';
 import LandingPage from '../pages/LandingPage';
 import LeadersDashboardPage from '../pages/LeadersDashboardPage';
+import PositionsPage from '../pages/PositionsPage';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
@@ -37,6 +38,8 @@ const AppRoutes = () => {
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
 
+        <Route path="/position-list" element={<PositionsPage />} />
+        
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
