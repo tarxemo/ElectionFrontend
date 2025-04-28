@@ -332,16 +332,6 @@ export const GET_POSITION_LIST = gql`
   }
 `;
 
-export const GET_POSITION_DETAILS = gql`
-  query PositionDetails($positionId: ID!) {
-    positionDetails(positionId: $positionId) {
-      id
-      name
-      level
-      description
-    }
-  }
-`;
 
 export const GET_ELECTION_LIST = gql`
   query ElectionList {
@@ -527,6 +517,107 @@ export const GET_ACADEMIC_YEARS = gql`
       id
       name
       isCurrent
+    }
+  }
+`;
+
+export const GET_ALL_INSTITUTIONS = gql `
+query MyQuery {
+  allInstitutions {
+    createdAt
+    id
+    name
+    studentCount
+    children {
+      description
+      createdAt
+      id
+      name
+      studentCount
+      children {
+        description
+        createdAt
+        id
+        leaderCount
+        name
+        studentCount
+      }
+    }
+  }
+}`
+
+// api/queries.ts
+export const GET_POSITION_DETAILS = gql`
+  query GetPositionDetails(
+    $positionId: ID!, 
+    $electionId: ID, 
+    $academicYearId: ID  
+  ) {
+    positionDetails(
+      positionId: $positionId, 
+      electionId: $electionId,
+      academicYearId: $academicYearId 
+    ) {
+      position {
+        id
+        name
+        description
+        level {
+          level
+        }
+        institution {
+          id
+          name
+        }
+      }
+      isElectionActive
+      totalVoters
+      totalVotes
+      winner {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+        }
+        manifesto
+        voteCount
+        votePercentage
+      }
+      candidates {
+        id
+        student {
+          user {
+            firstName
+            lastName
+            email
+          }
+          institution {
+            name
+          }
+        }
+        manifesto
+        voteCount
+        votePercentage
+        isWinner
+        promisesCount
+        rating
+      }
+      voteTimeSeries {
+        timestamp
+        count
+        candidateId
+      }
+    }
+  }
+`;
+
+export const SUBSCRIBE_TO_VOTES = gql`
+  subscription OnVoteAdded($positionId: ID!, $electionId: ID!) {
+    voteAdded(positionId: $positionId, electionId: $electionId) {
+      candidateId
+      timestamp
     }
   }
 `;

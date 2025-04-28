@@ -1,33 +1,14 @@
 // pages/PositionsPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import {
-  GET_ALL_POSITIONS,
-  GET_POSITION_STATS,
-  GET_INSTITUTIONS_BY_LEVEL,
-  GET_ACADEMIC_YEARS
+import { 
+  GET_ALL_POSITIONS, 
+  GET_POSITION_STATS, 
+  GET_ACADEMIC_YEARS, 
+  GET_ALL_INSTITUTIONS 
 } from '../api/queries';
-import { PositionStatsChart } from '../components/charts/PositionStatsChart';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  CircularProgress,
-  Container,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-  Typography
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import Navbar from '../components/Navbar';
+import { PositionStatsChart } from '../components/charts/PositionStatsChart';
 
 interface Position {
   id: string;
@@ -54,10 +35,7 @@ interface Position {
 interface Institution {
   id: string;
   name: string;
-  parent?: {
-    id: string;
-    name: string;
-  };
+  children?: Institution[];
 }
 
 const PositionsPage: React.FC = () => {
@@ -66,54 +44,60 @@ const PositionsPage: React.FC = () => {
     level: '',
     institutionId: '',
     academicYearId: '',
-    hasElections: false as boolean ,
-    hasCandidates: false as boolean 
+    hasElections: false,
+    hasCandidates: false,
   });
-  
   const [showFilters, setShowFilters] = useState(false);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
-  const [academicYears, setAcademicYears] = useState<Array<{id: string, name: string}>>([]);
+  const [academicYears, setAcademicYears] = useState<Array<{ id: string; name: string }>>([]);
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
 
-  // Fetch positions
+  const { data: institutionsData } = useQuery(GET_ALL_INSTITUTIONS);
+  const { data: academicYearsData } = useQuery(GET_ACADEMIC_YEARS);
   const { loading, error, data, refetch } = useQuery(GET_ALL_POSITIONS, {
     variables: {
       filters: {
         search: searchTerm,
-        ...filters
+        ...filters,
       },
       first: itemsPerPage,
-      skip: page * itemsPerPage
-    }
+      skip: page * itemsPerPage,
+    },
   });
-
-  // Fetch stats for charts
   const { data: statsData } = useQuery(GET_POSITION_STATS);
 
-  // Fetch institutions when level changes
   useEffect(() => {
-    if (filters.level) {
-      // In a real app, you would use GET_INSTITUTIONS_BY_LEVEL query here
-      // This is simplified for the example
-      setInstitutions([
-        { id: '1', name: 'College of Education' },
-        { id: '2', name: 'College of Science' }
-      ]);
-    } else {
-      setInstitutions([]);
+    if (institutionsData?.allInstitutions) {
+      setInstitutions(institutionsData.allInstitutions);
     }
-    setFilters(prev => ({ ...prev, institutionId: '' }));
-  }, [filters.level]);
+  }, [institutionsData]);
 
-  // Fetch academic years
   useEffect(() => {
-    // In a real app, you would use GET_ACADEMIC_YEARS query here
-    setAcademicYears([
-      { id: '1', name: '2022-2023' },
-      { id: '2', name: '2023-2024' }
-    ]);
-  }, []);
+    if (academicYearsData?.academicYears) {
+      setAcademicYears(academicYearsData.academicYears);
+    }
+  }, [academicYearsData]);
+
+  const getInstitutionsBySelectedLevel = () => {
+    if (!filters.level) return [];
+
+    if (filters.level === 'UNIVERSITY') {
+      return institutions;
+    }
+
+    if (filters.level === 'COLLEGE') {
+      return institutions.flatMap(u => u.children || []);
+    }
+
+    if (filters.level === 'HOSTEL') {
+      return institutions.flatMap(u =>
+        u.children?.flatMap(c => c.children || []) || []
+      );
+    }
+
+    return [];
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,214 +114,186 @@ const PositionsPage: React.FC = () => {
       institutionId: '',
       academicYearId: '',
       hasElections: false,
-      hasCandidates: false
+      hasCandidates: false,
     });
   };
 
-  const positions = data?.allPositions || [];
+  const positions: Position[] = data?.allPositions || [];
 
   return (
     <div className="bg-gray-900 min-h-screen">
       <Navbar />
-      <Container maxWidth="xl" className="py-8">
-        {/* Page Header */}
-        <Box mb={4} className="flex justify-between items-center">
-          <Typography variant="h4" className="text-[#FFE31A] font-bold">
-            Election Positions
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<FilterListIcon />}
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-yellow-400">Election Positions</h1>
+          <button
             onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center px-4 py-2 bg-[#FFE31A] text-gray-900 rounded transition"
           >
+            <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
             {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </Button>
-        </Box>
+          </button>
+        </div>
 
-        {/* Search and Filters */}
-        <Paper className="p-4 mb-6 bg-gray-800">
+        {/* Search */}
+        <div className="p-4 mb-6 bg-gray-800 rounded-lg">
           <form onSubmit={handleSearch} className="mb-4">
             <div className="flex gap-4">
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search positions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon className="text-gray-400 mr-2" />,
-                  className: "bg-gray-700 text-white rounded"
-                }}
-              />
-              <Button
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search positions..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500"
+                />
+              </div>
+              <button
                 type="submit"
-                variant="contained"
-                color="primary"
-                className="bg-[#FFE31A] text-gray-900 hover:bg-[#FFD700]"
+                className="px-4 py-2 bg-yellow-400 text-gray-900 rounded hover:bg-yellow-500 transition font-medium"
               >
                 Search
-              </Button>
+              </button>
             </div>
           </form>
 
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-              <FormControl fullWidth variant="outlined" className="bg-gray-700 rounded">
-                <InputLabel className="text-white">Level</InputLabel>
-                <Select
+              {/* Level */}
+              <div className="bg-gray-700 rounded p-2">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Level</label>
+                <select
                   value={filters.level}
-                  onChange={(e) => handleFilterChange('level', e.target.value)}
-                  label="Level"
-                  className="text-white"
+                  onChange={e => handleFilterChange('level', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-yellow-500"
                 >
-                  <MenuItem value="">All Levels</MenuItem>
-                  <MenuItem value="UNIVERSITY">University</MenuItem>
-                  <MenuItem value="COLLEGE">College</MenuItem>
-                  <MenuItem value="HOSTEL">Hostel</MenuItem>
-                </Select>
-              </FormControl>
+                  <option value="">All Levels</option>
+                  <option value="UNIVERSITY">University</option>
+                  <option value="COLLEGE">College</option>
+                  <option value="HOSTEL">Hostel</option>
+                </select>
+              </div>
 
-              <FormControl fullWidth variant="outlined" className="bg-gray-700 rounded" disabled={!filters.level}>
-                <InputLabel className="text-white">Institution</InputLabel>
-                <Select
+              {/* Institution */}
+              <div className="bg-gray-700 rounded p-2">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Institution</label>
+                <select
                   value={filters.institutionId}
-                  onChange={(e) => handleFilterChange('institutionId', e.target.value)}
-                  label="Institution"
-                  className="text-white"
+                  onChange={e => handleFilterChange('institutionId', e.target.value)}
+                  disabled={!filters.level}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-yellow-500 disabled:opacity-50"
                 >
-                  <MenuItem value="">All Institutions</MenuItem>
-                  {institutions.map((inst) => (
-                    <MenuItem key={inst.id} value={inst.id}>
+                  <option value="">All Institutions</option>
+                  {getInstitutionsBySelectedLevel().map(inst => (
+                    <option key={inst.id} value={inst.id}>
                       {inst.name}
-                    </MenuItem>
+                    </option>
                   ))}
-                </Select>
-              </FormControl>
+                </select>
+              </div>
 
-              <FormControl fullWidth variant="outlined" className="bg-gray-700 rounded">
-                <InputLabel className="text-white">Academic Year</InputLabel>
-                <Select
+              {/* Academic Year */}
+              <div className="bg-gray-700 rounded p-2">
+                <label className="block text-sm font-medium text-gray-300 mb-1">Academic Year</label>
+                <select
                   value={filters.academicYearId}
-                  onChange={(e) => handleFilterChange('academicYearId', e.target.value)}
-                  label="Academic Year"
-                  className="text-white"
+                  onChange={e => handleFilterChange('academicYearId', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-yellow-500"
                 >
-                  <MenuItem value="">All Years</MenuItem>
-                  {academicYears.map((year) => (
-                    <MenuItem key={year.id} value={year.id}>
+                  <option value="">All Years</option>
+                  {academicYears.map(year => (
+                    <option key={year.id} value={year.id}>
                       {year.name}
-                    </MenuItem>
+                    </option>
                   ))}
-                </Select>
-              </FormControl>
+                </select>
+              </div>
 
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="contained"
-                  color="primary"
+              {/* Buttons */}
+              <div className="flex items-center justify-between gap-2 p-2">
+                <button
                   onClick={() => refetch()}
-                  className="bg-[#FFE31A] text-gray-900 hover:bg-[#FFD700]"
+                  className="w-full px-4 py-2 bg-yellow-400 text-gray-900 rounded hover:bg-yellow-500 transition font-medium"
                 >
-                  Apply Filters
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
+                  Apply
+                </button>
+                <button
                   onClick={clearFilters}
-                  className="text-white"
+                  className="w-full px-4 py-2 border border-gray-400 text-white rounded hover:bg-gray-700 transition"
                 >
                   Clear
-                </Button>
+                </button>
               </div>
             </div>
           )}
-        </Paper>
+        </div>
 
-        {/* Stats Charts */}
+        {/* Stats */}
         {statsData?.positionStats && (
-          <Paper className="p-4 mb-6 bg-gray-800">
-            <Typography variant="h6" className="text-[#FFE31A] mb-4">
-              Position Statistics
-            </Typography>
+          <div className="p-4 mb-6 bg-gray-800 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4 text-yellow-400">Position Statistics</h2>
             <PositionStatsChart data={statsData.positionStats} />
-          </Paper>
+          </div>
         )}
 
-        {/* Positions List */}
-        <Grid container spacing={3}>
+        {/* Positions Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
-            <Grid item xs={12} className="flex justify-center">
-              <CircularProgress className="text-[#FFE31A]" />
-            </Grid>
+            <div className="col-span-full flex justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+            </div>
           ) : error ? (
-            <Grid item xs={12}>
-              <Typography color="error">Error loading positions: {error.message}</Typography>
-            </Grid>
+            <div className="col-span-full text-red-400">
+              Error loading positions: {error.message}
+            </div>
           ) : positions.length === 0 ? (
-            <Grid item xs={12}>
-              <Typography className="text-white">No positions found matching your criteria</Typography>
-            </Grid>
+            <div className="col-span-full text-white">
+              No positions found matching your criteria.
+            </div>
           ) : (
-            positions.map((position: Position) => (
-              <Grid item xs={12} sm={6} md={4} key={position.id}>
-                <Card className="h-full bg-gray-800 text-white">
-                  <CardContent>
-                    <Typography variant="h6" className="text-[#FFE31A]">
-                      {position.name}
-                    </Typography>
-                    <Typography variant="body2" className="my-2 text-gray-300">
-                      {position.description || 'No description available'}
-                    </Typography>
-                    <div className="flex flex-wrap gap-2 my-2">
-                      <Chip
-                        label={position.level.level}
-                        size="small"
-                        className="bg-[#FFE31A] text-gray-900"
-                      />
-                      <Chip
-                        label={position.institution.name}
-                        size="small"
-                        className="bg-blue-500 text-white"
-                      />
-                    </div>
-                    <div className="flex justify-between mt-4">
-                      <Typography variant="caption" className="text-gray-400">
-                        Elections: {position.electionCount}
-                      </Typography>
-                      <Typography variant="caption" className="text-gray-400">
-                        Candidates: {position.candidateCount}
-                      </Typography>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Grid>
+            positions.map(position => (
+              <div key={position.id} className="bg-gray-800 rounded-lg shadow-md overflow-hidden h-full flex flex-col p-4">
+                <h3 className="text-xl font-bold text-yellow-400 mb-2">{position.name}</h3>
+                <p className="text-gray-300 mb-4 flex-grow">{position.description || 'No description available'}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-medium">{position.level.level}</span>
+                  <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">{position.institution.name}</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-400 mt-auto">
+                  <span>Elections: {position.electionCount}</span>
+                  <span>Candidates: {position.candidateCount}</span>
+                </div>
+              </div>
             ))
           )}
-        </Grid>
+        </div>
 
         {/* Pagination */}
-        <Box mt={4} className="flex justify-center">
-          <Button
-            variant="outlined"
-            color="primary"
+        <div className="mt-8 flex justify-center gap-4">
+          <button
             disabled={page === 0}
             onClick={() => setPage(p => p - 1)}
-            className="mr-2 text-white"
+            className={`px-4 py-2 border rounded ${page === 0 ? 'border-gray-600 text-gray-500 cursor-not-allowed' : 'border-gray-400 text-white hover:bg-gray-700'}`}
           >
             Previous
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
+          </button>
+          <button
             disabled={positions.length < itemsPerPage}
             onClick={() => setPage(p => p + 1)}
-            className="text-white"
+            className={`px-4 py-2 border rounded ${positions.length < itemsPerPage ? 'border-gray-600 text-gray-500 cursor-not-allowed' : 'border-gray-400 text-white hover:bg-gray-700'}`}
           >
             Next
-          </Button>
-        </Box>
-      </Container>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
