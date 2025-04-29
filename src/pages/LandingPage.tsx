@@ -3,9 +3,9 @@ import React from 'react';
 import DemoSection from '../components/DemoSection';
 import FeaturesSection from '../components/FeaturesSection';
 import Footer from '../components/Footer';
-import HeroSection from '../components/HeroSection';
 import Navbar from '../components/Navbar';
 import StatsSection from '../components/StatsSection';
+import HeroSection from '../components/HeroSection';
 
 const LandingPage: React.FC = () => {
   return (
