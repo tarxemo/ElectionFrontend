@@ -15,6 +15,7 @@ import LandingPage from '../pages/LandingPage';
 import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
+import CandidateDetailsPage from '../pages/CandidateDetailsPage';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
@@ -42,6 +43,8 @@ const AppRoutes = () => {
         <Route path="/position-list" element={<PositionsPage />} />
         
         <Route path="/position/:positionId" element={<PositionCompetitorsPage />} />
+
+        <Route path="/candidate/:candidateId" element={<CandidateDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
