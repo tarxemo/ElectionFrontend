@@ -39,10 +39,9 @@ const CandidateDetailsPage: React.FC = () => {
   const candidateName = `${candidate.student.user.firstName} ${candidate.student.user.lastName}`;
 
   return (
-      <div className="bg-gray-900 min-h-screen">
-        <Navbar />
-      {/* Header Section */}
-      <div className="bg-gray-700 rounded-lg shadow p-6 mb-6">
+    <div className="bg-gray-900 min-h-screen text-white">
+      <Navbar />
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
             {candidate.student.user.firstName.charAt(0)}{candidate.student.user.lastName.charAt(0)}
@@ -65,7 +64,7 @@ const CandidateDetailsPage: React.FC = () => {
         {/* Left Column - Info */}
         <div className="lg:col-span-1 space-y-6">
           {/* Election Info */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Election Details</h2>
             <div className="space-y-2">
               <p><span className="font-semibold">Election:</span> {electionDetails.name}</p>
@@ -78,7 +77,7 @@ const CandidateDetailsPage: React.FC = () => {
 
           {/* Results */}
           {electionResults && (
-            <div className="bg-gray-700 rounded-lg shadow p-6">
+            <div className="bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4">Election Results</h2>
               <div className="space-y-2">
                 <p><span className="font-semibold">Total Votes:</span> {electionResults.total_votes}</p>
@@ -89,7 +88,7 @@ const CandidateDetailsPage: React.FC = () => {
           )}
 
           {/* Manifesto */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Manifesto</h2>
             <p className="text-gray-700">{candidate.manifesto || 'No manifesto provided'}</p>
           </div>
@@ -98,7 +97,7 @@ const CandidateDetailsPage: React.FC = () => {
         {/* Right Column - Visualizations */}
         <div className="lg:col-span-2 space-y-6">
           {/* Vote Time Series */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Daily Votes</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -120,7 +119,7 @@ const CandidateDetailsPage: React.FC = () => {
           </div>
 
           {/* Vote Distribution */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Vote Distribution</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -156,7 +155,7 @@ const CandidateDetailsPage: React.FC = () => {
           </div>
 
           {/* Cumulative Votes */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Cumulative Votes</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -178,7 +177,7 @@ const CandidateDetailsPage: React.FC = () => {
           </div>
 
           {/* Institutional Breakdown */}
-          <div className="bg-gray-700 rounded-lg shadow p-6">
+          <div className="bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Institutional Support</h2>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -212,7 +211,7 @@ const CandidateDetailsPage: React.FC = () => {
 
 {/* Competitors */}
 {competitors.length > 0 && (
-  <div className="bg-gray-700 rounded-lg shadow p-6">
+  <div className="bg-gray-800 rounded-lg shadow p-6">
     <h2 className="text-xl font-bold mb-4">Competitors</h2>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {competitors.map((competitor, index) => (
@@ -245,7 +244,7 @@ const CandidateDetailsPage: React.FC = () => {
 
           {/* Ratings (for winners) */}
           {leaderInfo && ratings.length > 0 && (
-            <div className="bg-gray-700 rounded-lg shadow p-6">
+            <div className="bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4">Ratings & Feedback</h2>
               <div className="space-y-4">
                 {ratings.map(rating => (
@@ -276,7 +275,7 @@ const CandidateDetailsPage: React.FC = () => {
 
           {/* Promises (for winners) */}
           {leaderInfo && promises.length > 0 && (
-            <div className="bg-gray-700 rounded-lg shadow p-6">
+            <div className="bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4">Promise Tracker</h2>
               <div className="space-y-4">
                 {promises.map(promise => (
