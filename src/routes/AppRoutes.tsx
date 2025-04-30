@@ -15,6 +15,7 @@ import LandingPage from '../pages/LandingPage';
 import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
+import CollegeList from '../pages/CollegeList';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
@@ -32,6 +33,7 @@ const AppRoutes = () => {
         <Route path='/college/:collegeId' element={< CollegeDetailsPage/>}/>
 
         <Route path="/election-list" element={<ElectionsListPage />} />
+        <Route path="/college-list" element={<CollegeList />} />
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
         <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>

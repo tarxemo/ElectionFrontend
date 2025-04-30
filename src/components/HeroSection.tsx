@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PositionResults from './CollegesResults';
+import CollegeList from '../pages/CollegeList';
 
 function HeroSection() {
   return (
@@ -36,6 +37,8 @@ function HeroSection() {
         </div>
       </div>
       <PositionResults positionId={0} />
+
+      <CollegeList/>
     </div>
   );
 }
