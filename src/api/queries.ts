@@ -521,6 +521,16 @@ export const GET_ACADEMIC_YEARS = gql`
   }
 `;
 
+export const GET_ACADEMIC_YEAR = gql`
+  query GetAcademicYear($isCurrent: Boolean) {
+    academicYears(isCurrent: $isCurrent) {
+      id
+      name
+      isCurrent
+    }
+  }
+`;
+
 export const GET_ALL_INSTITUTIONS = gql `
 query MyQuery {
   allInstitutions {
@@ -618,6 +628,98 @@ export const SUBSCRIBE_TO_VOTES = gql`
     voteAdded(positionId: $positionId, electionId: $electionId) {
       candidateId
       timestamp
+    }
+  }
+`;
+
+
+export const GET_INSTITUTION_BY_LEVEL = gql`
+  query GetInstitutionByLevel($level: String!) {
+    institutionsByLevel(level: $level) {
+      id
+      name
+      parent {
+        id
+        name
+      }
+    }
+  }
+`;
+
+
+
+export const GET_ELECTION_CONTESTANTS = gql`
+  query GetElectionContestants(
+    $institutionId: ID!
+    $electionId: ID
+    $positionId: ID
+    $academicYearId: ID
+  ) {
+    electionContestants(
+      institutionId: $institutionId
+      electionId: $electionId
+      positionId: $positionId
+      academicYearId: $academicYearId
+    ) {
+      id
+      isApproved
+      manifesto
+      student {
+        user {
+          firstName
+          lastName
+          username
+        }
+      }
+      electionPosition {
+        position {
+          name
+        }
+        election {
+          name
+          academicYear {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+
+
+import { gql } from '@apollo/client';
+
+export const GET_INSTITUTION_DETAILS = gql`
+  query GetInstitutionDetails($institutionId: ID!) {
+    institutionDetails(institutionId: $institutionId) {
+      totalStudents
+      activeElections
+      totalVotesCast
+      voterTurnout
+      positionsAvailable
+      currentLeaders
+    }
+  }
+`;
+
+export const GET_COLLEGE_DISTRIBUTION = gql`
+  query GetCollegeDistribution($parentInstitutionId: ID) {
+    collegeDistribution(parentInstitutionId: $parentInstitutionId) {
+      name
+      studentCount
+      percentage
+    }
+  }
+`;
+
+export const GET_ELECTION_TRENDS = gql`
+  query GetElectionTrends($institutionId: ID!) {
+    electionTrends(institutionId: $institutionId) {
+      year
+      elections
+      voters
+      turnout
     }
   }
 `;

@@ -15,6 +15,9 @@ import LandingPage from '../pages/LandingPage';
 import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
+import AboutPage from '../pages/AboutPage';
+import FeaturesPage from '../pages/Features';
+import InstitutionDetails from '../pages/insititutionDetails';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
@@ -30,11 +33,14 @@ const AppRoutes = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/college-list" element={<CollegeListPage />} />
         <Route path='/college/:collegeId' element={< CollegeDetailsPage/>}/>
+        <Route path='/about' element={< AboutPage/>}/>
+        <Route path='/features' element={< FeaturesPage/>}/>
 
         <Route path="/election-list" element={<ElectionsListPage />} />
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
         <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
+        <Route path='/institution/:id' element={< InstitutionDetails/>}/>
 
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
