@@ -91,63 +91,77 @@ const PositionCompetitorsPage: React.FC = () => {
     
     return Object.values(grouped);
   };
-  const formatVoteRatesData = (candidates: any[]) => {
-    // Create a map of all unique dates across all candidates
-    const allDates = new Set<string>();
+
+const formatVoteRatesData = (candidates: any[]) => {
+  // Create a map to store all data points by their timestamp
+  const dateMap: Record<string, any> = {};
+  
+  candidates.forEach(candidate => {
+    const candidateName = `${candidate.student.user.firstName} ${candidate.student.user.lastName}`;
     
-    candidates.forEach(candidate => {
-      candidate.voteRates.forEach((rate: any) => {
-        // Format based on granularity
-        const date = new Date(rate.date);
-        let formattedDate = date.toISOString(); // Default full format
-        
-        if (timeGranularity === 'day') {
-          formattedDate = date.toLocaleDateString();
-        } else if (timeGranularity === 'hour') {
-          formattedDate = date.toLocaleTimeString([], { hour: '2-digit' });
-        } else if (timeGranularity === 'minute') {
-          formattedDate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        allDates.add(formattedDate);
-      });
-    });
-  
-    // Convert to array and sort dates chronologically
-    const sortedDates = Array.from(allDates).sort((a, b) => 
-      new Date(a).getTime() - new Date(b).getTime()
-    );
-  
-    // Create data points for each date with cumulative votes
-    const cumulativeData: any[] = [];
-    const candidateTotals: Record<string, number> = {};
-  
-    sortedDates.forEach(date => {
-      const dataPoint: any = { date };
+    candidate.voteRates.forEach((rate: any) => {
+      const date = new Date(rate.date);
+      let timeKey: string;
       
+      // Create a consistent key based on granularity
+      if (timeGranularity === 'day') {
+        timeKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      } else if (timeGranularity === 'hour') {
+        timeKey = date.toISOString().split(':')[0] + ':00'; // YYYY-MM-DDTHH:00
+      } else { // minute
+        timeKey = date.toISOString().split(':').slice(0, 2).join(':') + ':00'; // YYYY-MM-DDTHH:MM:00
+      }
+      
+      // Initialize the time point if it doesn't exist
+      if (!dateMap[timeKey]) {
+        dateMap[timeKey] = { 
+          date: timeKey,
+          formattedDate: formatDateForDisplay(timeKey, timeGranularity)
+        };
+      }
+      
+      // Add the candidate's votes for this time period
+      dateMap[timeKey][candidateName] = (dateMap[timeKey][candidateName] || 0) + rate.voteCount;
+    });
+  });
+
+  // Convert to array and sort chronologically
+  const sortedData = Object.values(dateMap).sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Calculate cumulative totals if needed
+  if (showCumulative) {
+    const cumulativeTotals: Record<string, number> = {};
+    
+    sortedData.forEach((point: any) => {
       candidates.forEach(candidate => {
         const candidateName = `${candidate.student.user.firstName} ${candidate.student.user.lastName}`;
-        
-        // Initialize total if not set
-        if (!candidateTotals[candidateName]) {
-          candidateTotals[candidateName] = 0;
-        }
-  
-        // Find vote count for this date
-        const rate = candidate.voteRates.find((r: any) => r.date === date);
-        if (rate) {
-          candidateTotals[candidateName] += rate.voteCount;
-        }
-  
-        // Add cumulative count to the data point
-        dataPoint[candidateName] = candidateTotals[candidateName];
+        cumulativeTotals[candidateName] = (cumulativeTotals[candidateName] || 0) + (point[candidateName] || 0);
+        point[candidateName] = cumulativeTotals[candidateName];
       });
-  
-      cumulativeData.push(dataPoint);
     });
+  }
+
+  return sortedData;
+};
+
+// Helper function to format dates for display
+const formatDateForDisplay = (dateString: string, granularity: string) => {
+  const date = new Date(dateString);
   
-    return cumulativeData;
-  };
+  switch (granularity) {
+    case 'day':
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    case 'hour':
+      return date.toLocaleTimeString('en-US', { hour: '2-digit' });
+    case 'minute':
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    default:
+      return date.toISOString();
+  }
+};
+
 
   const preparePieData = (candidates: any[]) => {
     return candidates.map(candidate => ({
@@ -302,9 +316,11 @@ const PositionCompetitorsPage: React.FC = () => {
         data={formatVoteRatesData(positionDetails.candidates)}
         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
       >
+
+
         <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
         <XAxis 
-  dataKey="date" 
+  dataKey="formattedDate" 
   stroke="#9CA3AF" 
   tickFormatter={(date) => {
     const d = new Date(date);
@@ -319,10 +335,29 @@ const PositionCompetitorsPage: React.FC = () => {
 />
         <YAxis stroke="#9CA3AF" />
         <Tooltip 
-          contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
-          labelFormatter={(date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-          formatter={(value, name) => [`${value} votes`, name]}
-        />
+  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
+  labelFormatter={(dateKey) => {
+    const date = new Date(dateKey);
+    if (timeGranularity === 'day') {
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } else {
+      return date.toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  }}
+  formatter={(value, name) => [`${value} votes`, name]}
+/>
         <Legend />
         {positionDetails.candidates.map((candidate: any, index: number) => (
           <Line

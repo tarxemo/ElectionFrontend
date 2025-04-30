@@ -834,3 +834,16 @@ export const GET_CANDIDATE_DETAILS = gql`
 function GetCandidateDetails($candidateId: any, arg1: any) {
   throw new Error('Function not implemented.');
 }
+
+export const GET_ALL_ELECTIONS = gql`
+query MyQuery {
+  allElections {
+    description
+    name
+    status
+    endDatetime
+    id
+  }
+}
+
+`

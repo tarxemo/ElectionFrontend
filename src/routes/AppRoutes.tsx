@@ -41,7 +41,7 @@ const AppRoutes = () => {
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
         <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
-        <Route path='/institution/:id' element={< InstitutionDetails/>}/>
+        <Route path='/institution/:institutionId' element={< InstitutionDetails/>}/>
 
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
