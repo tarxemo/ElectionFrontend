@@ -9,6 +9,7 @@ import {
 } from '../api/queries';
 import Navbar from '../components/Navbar';
 import { PositionStatsChart } from '../components/charts/PositionStatsChart';
+import { Link } from 'react-router-dom';
 
 interface Position {
   id: string;
@@ -260,19 +261,28 @@ const PositionsPage: React.FC = () => {
             </div>
           ) : (
             positions.map(position => (
-              <div key={position.id} className="bg-gray-800 rounded-lg shadow-md overflow-hidden h-full flex flex-col p-4">
+              <Link
+                to={`/position/${position.id}`}
+                key={position.id}
+                className="bg-gray-800 rounded-lg shadow-md overflow-hidden h-full flex flex-col p-4 hover:ring-2 hover:ring-yellow-400 transition"
+              >
                 <h3 className="text-xl font-bold text-yellow-400 mb-2">{position.name}</h3>
                 <p className="text-gray-300 mb-4 flex-grow">{position.description || 'No description available'}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-medium">{position.level.level}</span>
-                  <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">{position.institution.name}</span>
+                  <span className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-medium">
+                    {position.level.level}
+                  </span>
+                  <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    {position.institution.name}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-400 mt-auto">
                   <span>Elections: {position.electionCount}</span>
                   <span>Candidates: {position.candidateCount}</span>
                 </div>
-              </div>
+              </Link>
             ))
+            
           )}
         </div>
 

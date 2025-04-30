@@ -251,29 +251,29 @@ export const GET_CANDIDATE_LIST = gql`
   }
 `;
 
-export const GET_CANDIDATE_DETAILS = gql`
-  query CandidateDetails($candidateId: ID!) {
-    candidateDetails(candidateId: $candidateId) {
-      id
-      student {
-        user {
-          username
-          firstName
-          lastName
-        }
-        hostel {
-          id
-          name
-        }
-      }
-      position {
-        id
-        name
-      }
-      manifesto
-    }
-  }
-`;
+// export const GET_CANDIDATE_DETAILS = gql`
+//   query CandidateDetails($candidateId: ID!) {
+//     candidateDetails(candidateId: $candidateId) {
+//       id
+//       student {
+//         user {
+//           username
+//           firstName
+//           lastName
+//         }
+//         hostel {
+//           id
+//           name
+//         }
+//       }
+//       position {
+//         id
+//         name
+//       }
+//       manifesto
+//     }
+//   }
+// `;
 
 export const GET_UNIVERSITY_DETAILS = gql`
   query UniversityDetails($universityId: ID!) {
@@ -521,6 +521,16 @@ export const GET_ACADEMIC_YEARS = gql`
   }
 `;
 
+export const GET_ACADEMIC_YEAR = gql`
+  query GetAcademicYear($isCurrent: Boolean) {
+    academicYears(isCurrent: $isCurrent) {
+      id
+      name
+      isCurrent
+    }
+  }
+`;
+
 export const GET_ALL_INSTITUTIONS = gql `
 query MyQuery {
   allInstitutions {
@@ -551,7 +561,9 @@ export const GET_POSITION_DETAILS = gql`
   query GetPositionDetails(
     $positionId: ID!, 
     $electionId: ID, 
-    $academicYearId: ID  
+    $academicYearId: ID,
+    $granularity: String,
+    $limit: Int
   ) {
     positionDetails(
       positionId: $positionId, 
@@ -596,6 +608,10 @@ export const GET_POSITION_DETAILS = gql`
           institution {
             name
           }
+        }
+        voteRates(granularity: $granularity, limit: $limit) {
+          voteCount
+          date
         }
         manifesto
         voteCount
@@ -645,3 +661,211 @@ export const GET_COLLEGES_WITH_STUDENTS = gql`
   }
 `;
 
+export const GET_INSTITUTION_BY_LEVEL = gql`
+  query GetInstitutionByLevel($level: String!) {
+    institutionsByLevel(level: $level) {
+      id
+      name
+      parent {
+        id
+        name
+      }
+    }
+  }
+`;
+
+
+
+export const GET_ELECTION_CONTESTANTS = gql`
+  query GetElectionContestants(
+    $institutionId: ID!
+    $electionId: ID
+    $positionId: ID
+    $academicYearId: ID
+  ) {
+    electionContestants(
+      institutionId: $institutionId
+      electionId: $electionId
+      positionId: $positionId
+      academicYearId: $academicYearId
+    ) {
+      id
+      isApproved
+      manifesto
+      student {
+        user {
+          firstName
+          lastName
+          username
+        }
+      }
+      electionPosition {
+        position {
+          name
+        }
+        election {
+          name
+          academicYear {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+
+
+export const GET_INSTITUTION_DETAILS = gql`
+  query GetInstitutionDetails($institutionId: ID!) {
+    institutionDetails(institutionId: $institutionId) {
+      totalStudents
+      activeElections
+      totalVotesCast
+      voterTurnout
+      positionsAvailable
+      currentLeaders
+    }
+  }
+`;
+
+export const GET_COLLEGE_DISTRIBUTION = gql`
+  query GetCollegeDistribution($parentInstitutionId: ID) {
+    collegeDistribution(parentInstitutionId: $parentInstitutionId) {
+      name
+      studentCount
+      percentage
+    }
+  }
+`;
+
+export const GET_ELECTION_TRENDS = gql`
+  query GetElectionTrends($institutionId: ID!) {
+    electionTrends(institutionId: $institutionId) {
+      year
+      elections
+      voters
+      turnout
+    }
+  }
+    `
+export const GET_CANDIDATE_DETAILS = gql`
+  query GetCandidateDetails($candidateId: ID!) {
+    candidateDetails(candidateId: $candidateId) {
+      candidate {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+          institution {
+            name
+          }
+        }
+        manifesto
+        voteCount
+      }
+      electionDetails {
+        name
+        status
+      }
+      positionDetails {
+        name
+        institution {
+          name
+        }
+        level {
+          level
+        }
+      }
+      competitors {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+          institution {
+            name
+          }
+        }
+        voteCount
+        votePercentage
+      }
+      electionResults {
+        totalVotes
+        percentage
+        positionRank
+        isWinner
+      }
+      voteStatistics {
+        voteTimeSeries {
+          date
+          voteCount
+        }
+        voteDistribution {
+          candidateId
+          candidateName
+          voteCount
+          votePercentage
+          isWinner
+        }
+        cumulativeVotes {
+          date
+          voteCount
+        }
+        institutionalBreakdown {
+          institutionName
+          voteCount
+          votePercentage
+        }
+      }
+      leaderInfo {
+        startDate
+        endDate
+        isActive
+      }
+      ratings {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+        }
+        score
+        comment
+        timestamp
+      }
+      promises {
+        id
+        title
+        description
+        promiseUpdates {
+          id
+          status
+          update
+          timestamp
+        }
+      }
+    }
+  }
+`;
+
+function GetCandidateDetails($candidateId: any, arg1: any) {
+  throw new Error('Function not implemented.');
+}
+
+export const GET_ALL_ELECTIONS = gql`
+query MyQuery {
+  allElections {
+    description
+    name
+    status
+    endDatetime
+    id
+  }
+}
+
+`

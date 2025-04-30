@@ -1,10 +1,10 @@
 import React from 'react';
-import DemoSection from '../component/DemoSection';
-import FeaturesSection from '../component/FeaturesSection';
-import Footer from '../component/Footer';
-import HeroSection from '../component/HeroSection';
-import Navbar from '../component/Navbar';
-import StatsSection from '../component/StatsSection';
+import DemoSection from '../components/DemoSection';
+import FeaturesSection from '../components/FeaturesSection';
+import Footer from '../components/Footer';
+import HeroSection from '../components/HeroSection';
+import Navbar from '../components/Navbar';
+import StatsSection from '../components/StatsSection';
 
 const LandingPage: React.FC = () => {
   return (

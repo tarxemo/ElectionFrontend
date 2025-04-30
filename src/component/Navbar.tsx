@@ -22,9 +22,6 @@ const Navbar: React.FC = () => {
                 <Link to="/election-list" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   Elections
                 </Link>
-                <Link to="/college-list" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                  Colleges
-                </Link>
                 <Link to="/about" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   About
                 </Link>

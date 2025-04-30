@@ -20,6 +20,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import { Link } from "react-router-dom";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -28,7 +29,8 @@ const PositionCompetitorsPage: React.FC = () => {
     const [timeSeriesData, setTimeSeriesData] = useState<any[]>([]);
     const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
     const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
-    
+    const [showCumulative, setShowCumulative] = useState(true);
+    const [timeGranularity, setTimeGranularity] = useState<'minute' | 'hour' | 'day'>('day');
     // Fetch academic years
     const { data: academicYearsData } = useQuery(GET_ACADEMIC_YEARS);
     
@@ -36,7 +38,9 @@ const PositionCompetitorsPage: React.FC = () => {
       variables: { 
         positionId, 
         electionId,
-        academicYearId: selectedAcademicYear  // Pass selected academic year
+        academicYearId: selectedAcademicYear,
+        granularity: timeGranularity,  // Add this
+        limit: 50  // Add this
       },
       fetchPolicy: 'cache-and-network'
     });
@@ -87,6 +91,77 @@ const PositionCompetitorsPage: React.FC = () => {
     
     return Object.values(grouped);
   };
+
+const formatVoteRatesData = (candidates: any[]) => {
+  // Create a map to store all data points by their timestamp
+  const dateMap: Record<string, any> = {};
+  
+  candidates.forEach(candidate => {
+    const candidateName = `${candidate.student.user.firstName} ${candidate.student.user.lastName}`;
+    
+    candidate.voteRates.forEach((rate: any) => {
+      const date = new Date(rate.date);
+      let timeKey: string;
+      
+      // Create a consistent key based on granularity
+      if (timeGranularity === 'day') {
+        timeKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      } else if (timeGranularity === 'hour') {
+        timeKey = date.toISOString().split(':')[0] + ':00'; // YYYY-MM-DDTHH:00
+      } else { // minute
+        timeKey = date.toISOString().split(':').slice(0, 2).join(':') + ':00'; // YYYY-MM-DDTHH:MM:00
+      }
+      
+      // Initialize the time point if it doesn't exist
+      if (!dateMap[timeKey]) {
+        dateMap[timeKey] = { 
+          date: timeKey,
+          formattedDate: formatDateForDisplay(timeKey, timeGranularity)
+        };
+      }
+      
+      // Add the candidate's votes for this time period
+      dateMap[timeKey][candidateName] = (dateMap[timeKey][candidateName] || 0) + rate.voteCount;
+    });
+  });
+
+  // Convert to array and sort chronologically
+  const sortedData = Object.values(dateMap).sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  // Calculate cumulative totals if needed
+  if (showCumulative) {
+    const cumulativeTotals: Record<string, number> = {};
+    
+    sortedData.forEach((point: any) => {
+      candidates.forEach(candidate => {
+        const candidateName = `${candidate.student.user.firstName} ${candidate.student.user.lastName}`;
+        cumulativeTotals[candidateName] = (cumulativeTotals[candidateName] || 0) + (point[candidateName] || 0);
+        point[candidateName] = cumulativeTotals[candidateName];
+      });
+    });
+  }
+
+  return sortedData;
+};
+
+// Helper function to format dates for display
+const formatDateForDisplay = (dateString: string, granularity: string) => {
+  const date = new Date(dateString);
+  
+  switch (granularity) {
+    case 'day':
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    case 'hour':
+      return date.toLocaleTimeString('en-US', { hour: '2-digit' });
+    case 'minute':
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    default:
+      return date.toISOString();
+  }
+};
+
 
   const preparePieData = (candidates: any[]) => {
     return candidates.map(candidate => ({
@@ -206,131 +281,219 @@ const PositionCompetitorsPage: React.FC = () => {
           </div>
         )}
 
+{/* Cumulative Votes Over Time */}
+<div className="bg-gray-800 p-4 rounded-lg mb-8">
+  <h2 className="text-xl font-bold text-yellow-400 mb-4">
+    Cumulative Votes Over Time
+  </h2>
+
+
+{/* Granularity Selector */}
+<div className="flex gap-2 mb-4">
+  <button 
+    onClick={() => setTimeGranularity('minute')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'minute' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Minute
+  </button>
+  <button 
+    onClick={() => setTimeGranularity('hour')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'hour' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Hour
+  </button>
+  <button 
+    onClick={() => setTimeGranularity('day')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'day' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Day
+  </button>
+</div>
+
+  <div className="h-200">
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart 
+        data={formatVoteRatesData(positionDetails.candidates)}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      >
+
+
+        <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+        <XAxis 
+  dataKey="formattedDate" 
+  stroke="#9CA3AF" 
+  tickFormatter={(date) => {
+    const d = new Date(date);
+    if (timeGranularity === 'day') {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } else if (timeGranularity === 'hour') {
+      return d.toLocaleTimeString('en-US', { hour: '2-digit' });
+    } else {
+      return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+  }}
+/>
+        <YAxis stroke="#9CA3AF" />
+        <Tooltip 
+  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
+  labelFormatter={(dateKey) => {
+    const date = new Date(dateKey);
+    if (timeGranularity === 'day') {
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } else {
+      return date.toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  }}
+  formatter={(value, name) => [`${value} votes`, name]}
+/>
+        <Legend />
+        {positionDetails.candidates.map((candidate: any, index: number) => (
+          <Line
+            key={candidate.id}
+            type="monotone"
+            dataKey={`${candidate.student.user.firstName} ${candidate.student.user.lastName}`}
+            stroke={COLORS[index % COLORS.length]}
+            strokeWidth={2}
+            activeDot={{ r: 6 }}
+            dot={{ r: 2 }}
+          />
+        ))}
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Candidates List */}
           <div className="lg:col-span-1 space-y-4">
             <h2 className="text-2xl font-bold text-yellow-400 mb-4">Candidates</h2>
             
-            {positionDetails.candidates.map((candidate: any) => (
-              <div key={candidate.id} className={`bg-gray-800 rounded-lg p-4 border-l-4 ${candidate.isWinner ? 'border-yellow-400' : 'border-gray-700'}`}>
-                <div className="flex items-start">
-                  <div className="bg-gray-700 text-yellow-400 rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold mr-4">
-                    {candidate.student.user.firstName.charAt(0)}{candidate.student.user.lastName.charAt(0)}
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="text-lg font-bold text-white">
-                      {candidate.student.user.firstName} {candidate.student.user.lastName}
-                      {candidate.isWinner && (
-                        <span className="ml-2 bg-yellow-400 text-gray-900 text-xs px-2 py-1 rounded">WINNER</span>
-                      )}
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-2">
-                      {candidate.student.institution.name}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="bg-blue-900 text-blue-100 px-2 py-1 rounded text-xs">
-                        {candidate.voteCount} votes
-                      </span>
-                      <span className="bg-purple-900 text-purple-100 px-2 py-1 rounded text-xs">
-                        {candidate.votePercentage?.toFixed(1)}%
-                      </span>
-                      {candidate.rating && (
-                        <span className="bg-green-900 text-green-100 px-2 py-1 rounded text-xs">
-                          ★ {candidate.rating.toFixed(1)} rating
-                        </span>
-                      )}
-                      <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs">
-                        {candidate.promisesCount} promises
-                      </span>
-                    </div>
-                    <p className="text-gray-300 text-sm">
-                      {candidate.manifesto || 'No manifesto provided'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+
+{positionDetails.candidates.map((candidate: any) => (
+  <Link to={`/candidate/${candidate.id}`} key={candidate.id}>
+    <div className={`bg-gray-800 rounded-lg p-4 border-l-4 cursor-pointer hover:bg-gray-700 transition-all duration-200 ${candidate.isWinner ? 'border-yellow-400' : 'border-gray-700'}`}>
+      <div className="flex items-start">
+        <div className="bg-gray-700 text-yellow-400 rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold mr-4">
+          {candidate.student.user.firstName.charAt(0)}{candidate.student.user.lastName.charAt(0)}
+        </div>
+        <div className="flex-grow">
+          <h3 className="text-lg font-bold text-white">
+            {candidate.student.user.firstName} {candidate.student.user.lastName}
+            {candidate.isWinner && (
+              <span className="ml-2 bg-yellow-400 text-gray-900 text-xs px-2 py-1 rounded">WINNER</span>
+            )}
+          </h3>
+          <p className="text-gray-400 text-sm mb-2">
+            {candidate.student.institution.name}
+          </p>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="bg-blue-900 text-blue-100 px-2 py-1 rounded text-xs">
+              {candidate.voteCount} votes
+            </span>
+            <span className="bg-purple-900 text-purple-100 px-2 py-1 rounded text-xs">
+              {candidate.votePercentage?.toFixed(1)}%
+            </span>
+            {candidate.rating && (
+              <span className="bg-green-900 text-green-100 px-2 py-1 rounded text-xs">
+                ★ {candidate.rating.toFixed(1)} rating
+              </span>
+            )}
+            <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs">
+              {candidate.promisesCount} promises
+            </span>
+          </div>
+          <p className="text-gray-300 text-sm">
+            {candidate.manifesto || 'No manifesto provided'}
+          </p>
+        </div>
+      </div>
+    </div>
+  </Link>
+))}
+
           </div>
 
           {/* Right Column - Visualizations */}
           <div className="lg:col-span-2 space-y-6">
             {/* Votes Over Time */}
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-xl font-bold text-yellow-400 mb-4">
-                Votes Over Time {positionDetails.isElectionActive && '(Live)'}
-                {lastUpdate && (
-                  <span className="text-sm text-gray-400 ml-2">
-                    Last updated: {lastUpdate.toLocaleTimeString()}
-                  </span>
-                )}
-              </h2>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={timeSeriesData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
-                    <XAxis dataKey="timestamp" stroke="#9CA3AF" />
-                    <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
-                    />
-                    <Legend />
-                    {positionDetails.candidates.map((candidate: any, index: number) => (
-                      <Line
-                        key={candidate.id}
-                        type="monotone"
-                        dataKey={`${candidate.student.user.firstName} ${candidate.student.user.lastName}`}
-                        stroke={COLORS[index % COLORS.length]}
-                        strokeWidth={2}
-                        dot={false}
-                        activeDot={{ r: 6 }}
-                      />
-                    ))}
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Vote Distribution */}
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-xl font-bold text-yellow-400 mb-4">Vote Distribution</h2>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={preparePieData(positionDetails.candidates)}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
-                    >
-                      {positionDetails.candidates.map((_: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value: number, name: string, props: any) => [
-                        `${value} votes (${props.payload.percentage.toFixed(1)}%)`,
-                        name
-                      ]}
-                      contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
-                    />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
+            
+<div className="bg-gray-800 p-4 rounded-lg">
+  <h2 className="text-xl font-bold text-yellow-400 mb-4">
+    Vote Share Distribution
+    {positionDetails.winner && (
+      <span className="text-sm text-gray-400 ml-2">
+        (Winner: {positionDetails.winner.votePercentage?.toFixed(1)}%)
+      </span>
+    )}
+  </h2>
+  <div className="h-128 flex">
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={preparePieData(positionDetails.candidates)}
+          cx="50%"
+          cy="50%"
+          innerRadius={60}
+          outerRadius={100}
+          paddingAngle={3}
+          dataKey="value"
+          label={({ name, percentage }) => `${percentage.toFixed(1)}%`}
+          labelLine={false}
+        >
+          {positionDetails.candidates.map((candidate: any, index: number) => (
+            <Cell 
+              key={`cell-${index}`} 
+              fill={COLORS[index % COLORS.length]}
+              stroke={candidate.isWinner ? '#FFD700' : '#1F2937'}
+              strokeWidth={candidate.isWinner ? 3 : 1}
+            />
+          ))}
+        </Pie>
+        <Tooltip 
+          formatter={(value: number, name: string, props: any) => [
+            `${value} votes (${props.payload.percentage.toFixed(1)}%)`,
+            name
+          ]}
+          contentStyle={{ 
+            backgroundColor: '#1F2937', 
+            borderColor: '#4B5563',
+            borderRadius: '0.5rem'
+          }}
+        />
+        <Legend 
+          layout="vertical" 
+          align="right" 
+          verticalAlign="middle"
+          formatter={(value, entry, index) => (
+            <span className={positionDetails.candidates[index].isWinner ? "text-yellow-400" : "text-gray-300"}>
+              {value}
+            </span>
+          )}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+</div>
             {/* Current Standings */}
             <div className="bg-gray-800 p-4 rounded-lg">
               <h2 className="text-xl font-bold text-yellow-400 mb-4">
                 Current Standings
                 {positionDetails.isElectionActive && ' (Live)'}
               </h2>
-              <div className="h-64">
+              <div className="h-140">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={positionDetails.candidates

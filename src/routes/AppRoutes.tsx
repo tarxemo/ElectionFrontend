@@ -16,6 +16,10 @@ import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
 import CollegeList from '../pages/CollegeList';
+import AboutPage from '../pages/AboutPage';
+import FeaturesPage from '../pages/Features';
+import InstitutionDetails from '../pages/insititutionDetails';
+import CandidateDetailsPage from '../pages/CandidateDetailsPage';
 // import UserManagementPage from '../pages/UserManagementPage';
 
 const AppRoutes = () => {
@@ -31,12 +35,15 @@ const AppRoutes = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/college-list" element={<CollegeListPage />} />
         <Route path='/college/:collegeId' element={< CollegeDetailsPage/>}/>
+        <Route path='/about' element={< AboutPage/>}/>
+        <Route path='/features' element={< FeaturesPage/>}/>
 
         <Route path="/election-list" element={<ElectionsListPage />} />
         <Route path="/college-list" element={<CollegeList />} />
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
         <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
+        <Route path='/institution/:institutionId' element={< InstitutionDetails/>}/>
 
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
@@ -44,6 +51,8 @@ const AppRoutes = () => {
         <Route path="/position-list" element={<PositionsPage />} />
         
         <Route path="/position/:positionId" element={<PositionCompetitorsPage />} />
+
+        <Route path="/candidate/:candidateId" element={<CandidateDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
