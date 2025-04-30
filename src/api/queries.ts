@@ -551,7 +551,9 @@ export const GET_POSITION_DETAILS = gql`
   query GetPositionDetails(
     $positionId: ID!, 
     $electionId: ID, 
-    $academicYearId: ID  
+    $academicYearId: ID,
+    $granularity: String,
+    $limit: Int
   ) {
     positionDetails(
       positionId: $positionId, 
@@ -597,7 +599,7 @@ export const GET_POSITION_DETAILS = gql`
             name
           }
         }
-        voteRates {
+        voteRates(granularity: $granularity, limit: $limit) {
           voteCount
           date
         }

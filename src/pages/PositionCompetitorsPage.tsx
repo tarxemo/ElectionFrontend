@@ -30,6 +30,7 @@ const PositionCompetitorsPage: React.FC = () => {
     const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
     const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
     const [showCumulative, setShowCumulative] = useState(true);
+    const [timeGranularity, setTimeGranularity] = useState<'minute' | 'hour' | 'day'>('day');
     // Fetch academic years
     const { data: academicYearsData } = useQuery(GET_ACADEMIC_YEARS);
     
@@ -37,7 +38,9 @@ const PositionCompetitorsPage: React.FC = () => {
       variables: { 
         positionId, 
         electionId,
-        academicYearId: selectedAcademicYear  // Pass selected academic year
+        academicYearId: selectedAcademicYear,
+        granularity: timeGranularity,  // Add this
+        limit: 50  // Add this
       },
       fetchPolicy: 'cache-and-network'
     });
@@ -91,9 +94,22 @@ const PositionCompetitorsPage: React.FC = () => {
   const formatVoteRatesData = (candidates: any[]) => {
     // Create a map of all unique dates across all candidates
     const allDates = new Set<string>();
+    
     candidates.forEach(candidate => {
       candidate.voteRates.forEach((rate: any) => {
-        allDates.add(rate.date);
+        // Format based on granularity
+        const date = new Date(rate.date);
+        let formattedDate = date.toISOString(); // Default full format
+        
+        if (timeGranularity === 'day') {
+          formattedDate = date.toLocaleDateString();
+        } else if (timeGranularity === 'hour') {
+          formattedDate = date.toLocaleTimeString([], { hour: '2-digit' });
+        } else if (timeGranularity === 'minute') {
+          formattedDate = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        allDates.add(formattedDate);
       });
     });
   
@@ -256,6 +272,30 @@ const PositionCompetitorsPage: React.FC = () => {
   <h2 className="text-xl font-bold text-yellow-400 mb-4">
     Cumulative Votes Over Time
   </h2>
+
+
+{/* Granularity Selector */}
+<div className="flex gap-2 mb-4">
+  <button 
+    onClick={() => setTimeGranularity('minute')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'minute' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Minute
+  </button>
+  <button 
+    onClick={() => setTimeGranularity('hour')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'hour' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Hour
+  </button>
+  <button 
+    onClick={() => setTimeGranularity('day')}
+    className={`px-3 py-1 rounded ${timeGranularity === 'day' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-700 text-gray-300'}`}
+  >
+    Per Day
+  </button>
+</div>
+
   <div className="h-200">
     <ResponsiveContainer width="100%" height="100%">
       <LineChart 
@@ -264,10 +304,19 @@ const PositionCompetitorsPage: React.FC = () => {
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
         <XAxis 
-          dataKey="date" 
-          stroke="#9CA3AF" 
-          tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-        />
+  dataKey="date" 
+  stroke="#9CA3AF" 
+  tickFormatter={(date) => {
+    const d = new Date(date);
+    if (timeGranularity === 'day') {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } else if (timeGranularity === 'hour') {
+      return d.toLocaleTimeString('en-US', { hour: '2-digit' });
+    } else {
+      return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+  }}
+/>
         <YAxis stroke="#9CA3AF" />
         <Tooltip 
           contentStyle={{ backgroundColor: '#1F2937', borderColor: '#4B5563' }}
