@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CollegeRadialChart from '../components/chart/ResultsByCollageChart';
+import CollegeRadialChart from '../components/chart/CollageRadialChart';
 import VotingActivityChart from '../components/chart/VotingActivityChart';
 import CandidateComparisonChart from '../components/chart/CandidateComparisonChart';
 

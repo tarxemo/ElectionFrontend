@@ -44,6 +44,7 @@ const CandidateComparisonChart = ({ data }: { data: { name: string; votes: numbe
         >
           {data.map((entry, index) => (
             <text
+              key={index}   
               x={entry.votes + 15}
               y={index * 20 + 12}
               textAnchor="start"
