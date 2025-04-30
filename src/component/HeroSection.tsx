@@ -13,9 +13,9 @@ const HeroSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative z-10">
         <div className="text-center">
           <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block">Modern Campus</span>
+            <span className="block">Udom Campus</span>
             <span className="block text-[#FFE31A] relative inline-block">
-              Election System
+              Smart uchaguzi
               <span className="absolute -bottom-2 left-0 right-0 h-1 bg-[#FFE31A] transform scale-x-75"></span>
             </span>
           </h1>

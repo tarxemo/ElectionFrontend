@@ -251,29 +251,29 @@ export const GET_CANDIDATE_LIST = gql`
   }
 `;
 
-export const GET_CANDIDATE_DETAILS = gql`
-  query CandidateDetails($candidateId: ID!) {
-    candidateDetails(candidateId: $candidateId) {
-      id
-      student {
-        user {
-          username
-          firstName
-          lastName
-        }
-        hostel {
-          id
-          name
-        }
-      }
-      position {
-        id
-        name
-      }
-      manifesto
-    }
-  }
-`;
+// export const GET_CANDIDATE_DETAILS = gql`
+//   query CandidateDetails($candidateId: ID!) {
+//     candidateDetails(candidateId: $candidateId) {
+//       id
+//       student {
+//         user {
+//           username
+//           firstName
+//           lastName
+//         }
+//         hostel {
+//           id
+//           name
+//         }
+//       }
+//       position {
+//         id
+//         name
+//       }
+//       manifesto
+//     }
+//   }
+// `;
 
 export const GET_UNIVERSITY_DETAILS = gql`
   query UniversityDetails($universityId: ID!) {
@@ -607,6 +607,10 @@ export const GET_POSITION_DETAILS = gql`
             name
           }
         }
+        voteRates {
+          voteCount
+          date
+        }
         manifesto
         voteCount
         votePercentage
@@ -722,4 +726,110 @@ export const GET_ELECTION_TRENDS = gql`
       turnout
     }
   }
+export const GET_CANDIDATE_DETAILS = gql`
+  query GetCandidateDetails($candidateId: ID!) {
+    candidateDetails(candidateId: $candidateId) {
+      candidate {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+          institution {
+            name
+          }
+        }
+        manifesto
+        voteCount
+      }
+      electionDetails {
+        name
+        status
+      }
+      positionDetails {
+        name
+        institution {
+          name
+        }
+        level {
+          level
+        }
+      }
+      competitors {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+          institution {
+            name
+          }
+        }
+        voteCount
+        votePercentage
+      }
+      electionResults {
+        totalVotes
+        percentage
+        positionRank
+        isWinner
+      }
+      voteStatistics {
+        voteTimeSeries {
+          date
+          voteCount
+        }
+        voteDistribution {
+          candidateId
+          candidateName
+          voteCount
+          votePercentage
+          isWinner
+        }
+        cumulativeVotes {
+          date
+          voteCount
+        }
+        institutionalBreakdown {
+          institutionName
+          voteCount
+          votePercentage
+        }
+      }
+      leaderInfo {
+        startDate
+        endDate
+        isActive
+      }
+      ratings {
+        id
+        student {
+          user {
+            firstName
+            lastName
+          }
+        }
+        score
+        comment
+        timestamp
+      }
+      promises {
+        id
+        title
+        description
+        promiseUpdates {
+          id
+          status
+          update
+          timestamp
+        }
+      }
+    }
+  }
 `;
+
+function GetCandidateDetails($candidateId: any, arg1: any) {
+  throw new Error('Function not implemented.');
+}
