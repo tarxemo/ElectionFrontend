@@ -17,9 +17,8 @@ import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
 import AboutPage from '../pages/AboutPage';
 import FeaturesPage from '../pages/Features';
-import InstitutionDetails from '../pages/insititutionDetails';
 import CandidateDetailsPage from '../pages/CandidateDetailsPage';
-// import UserManagementPage from '../pages/UserManagementPage';
+import InstitutionDetailsPage from '../pages/InstitutionDetailsPage';
 
 const AppRoutes = () => {
   return (
@@ -41,7 +40,7 @@ const AppRoutes = () => {
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
         <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
-        <Route path='/institution/:institutionId' element={< InstitutionDetails/>}/>
+        {/* <Route path='/institution/:institutionId' element={< InstitutionDetails/>}/> */}
 
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
@@ -51,6 +50,7 @@ const AppRoutes = () => {
         <Route path="/position/:positionId" element={<PositionCompetitorsPage />} />
 
         <Route path="/candidate/:candidateId" element={<CandidateDetailsPage />} />
+        <Route path="/institution/:institutionId" element={<InstitutionDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

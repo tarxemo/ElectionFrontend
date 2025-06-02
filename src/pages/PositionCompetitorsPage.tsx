@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
 import { GET_POSITION_DETAILS, SUBSCRIBE_TO_VOTES, 
-    GET_ACADEMIC_YEARS } from '../api/queries';
+  GET_ALL_ELECTIONS, 
+  GET_ACADEMIC_YEARS} from '../api/queries';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import {
@@ -29,15 +30,17 @@ const PositionCompetitorsPage: React.FC = () => {
     const [timeSeriesData, setTimeSeriesData] = useState<any[]>([]);
     const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
     const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
+    const [selectedElection, setSelectedElection] = useState<string | null>(null);
     const [showCumulative, setShowCumulative] = useState(true);
     const [timeGranularity, setTimeGranularity] = useState<'minute' | 'hour' | 'day'>('day');
     // Fetch academic years
+    const { data: electionData } = useQuery(GET_ALL_ELECTIONS);
     const { data: academicYearsData } = useQuery(GET_ACADEMIC_YEARS);
     
     const { loading, error, data, refetch } = useQuery(GET_POSITION_DETAILS, {
       variables: { 
         positionId, 
-        electionId,
+        electionId: selectedElection ?? electionId ?? null,
         academicYearId: selectedAcademicYear,
         granularity: timeGranularity,  // Add this
         limit: 50  // Add this
@@ -54,6 +57,10 @@ const PositionCompetitorsPage: React.FC = () => {
     // Handle academic year change
     const handleAcademicYearChange = (yearId: string) => {
       setSelectedAcademicYear(yearId === '' ? null : yearId);
+    };
+
+    const handleElectionChange = (electionId: string) => {
+      setSelectedElection(electionId === '' ? null : electionId);
     };
 
   useEffect(() => {
@@ -209,11 +216,12 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
                 {positionDetails.position.description}
               </p>
             </div>
-            
+          </div>
+          <div>
             {/* Academic Year Selector */}
             <div className="bg-gray-800 rounded-lg p-2">
               <label htmlFor="academic-year" className="block text-sm font-medium text-gray-300 mb-1">
-                Academic Year
+                Accademic Year
               </label>
               <select
                 id="academic-year"
@@ -229,6 +237,28 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
                 ))}
               </select>
             </div>
+
+
+            <div className="bg-gray-800 rounded-lg p-2">
+              <label htmlFor="academic-year" className="block text-sm font-medium text-gray-300 mb-1">
+                Election
+              </label>
+              <select
+                id="academic-year"
+                value={selectedElection || ''}
+                onChange={(e) => handleElectionChange(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              >
+                <option value="">All Elections</option>
+                {electionData?.allElections?.map((election: any) => (
+                  <option key={election.id} value={election.id}>
+                    {election.name} {election.status == "COMPLETED" ? 'completed' : 'in progress'}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+
           </div>
           <h1 className="text-3xl font-bold text-yellow-400 mb-2">
             {positionDetails.position.name}
@@ -384,7 +414,7 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
 
 {positionDetails.candidates.map((candidate: any) => (
   <Link to={`/candidate/${candidate.id}`} key={candidate.id}>
-    <div className={`bg-gray-800 rounded-lg p-4 border-l-4 cursor-pointer hover:bg-gray-700 transition-all duration-200 ${candidate.isWinner ? 'border-yellow-400' : 'border-gray-700'}`}>
+    <div className={`bg-gray-800 rounded-lg m-4 p-4 border-l-4 cursor-pointer hover:bg-gray-700 transition-all duration-200 ${candidate.isWinner ? 'border-yellow-400' : 'border-gray-700'}`}>
       <div className="flex items-start">
         <div className="bg-gray-700 text-yellow-400 rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold mr-4">
           {candidate.student.user.firstName.charAt(0)}{candidate.student.user.lastName.charAt(0)}

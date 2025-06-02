@@ -333,34 +333,18 @@ export const GET_POSITION_LIST = gql`
 `;
 
 
-export const GET_ELECTION_LIST = gql`
-  query ElectionList {
-    electionList {
-      id
-      name
-      level
-      startDate
-      endDate
-    }
-  }
-`;
+// export const GET_ELECTION_LIST = gql`
+//   query ElectionList {
+//     electionList {
+//       id
+//       name
+//       level
+//       startDate
+//       endDate
+//     }
+//   }
+// `;
 
-export const GET_ELECTION_DETAILS = gql`
-  query ElectionDetails($electionId: ID!) {
-    electionDetails(electionId: $electionId) {
-      id
-      name
-      level
-      startDate
-      endDate
-      description
-      positions {
-        id
-        name
-      }
-    }
-  }
-`;
 
 
 // Won leaders query
@@ -694,18 +678,18 @@ export const GET_ELECTION_CONTESTANTS = gql`
 
 
 
-export const GET_INSTITUTION_DETAILS = gql`
-  query GetInstitutionDetails($institutionId: ID!) {
-    institutionDetails(institutionId: $institutionId) {
-      totalStudents
-      activeElections
-      totalVotesCast
-      voterTurnout
-      positionsAvailable
-      currentLeaders
-    }
-  }
-`;
+// export const GET_INSTITUTION_DETAILS = gql`
+//   query GetInstitutionDetails($institutionId: ID!) {
+//     institutionDetails(institutionId: $institutionId) {
+//       totalStudents
+//       activeElections
+//       totalVotesCast
+//       voterTurnout
+//       positionsAvailable
+//       currentLeaders
+//     }
+//   }
+// `;
 
 export const GET_COLLEGE_DISTRIBUTION = gql`
   query GetCollegeDistribution($parentInstitutionId: ID) {
@@ -844,6 +828,161 @@ query MyQuery {
     endDatetime
     id
   }
-}
+}`
 
-`
+export const GET_INSTITUTION_DETAILS = gql`
+  query GetInstitutionDetails($institutionId: ID!) {
+    institutionDetails(institutionId: $institutionId) {
+      institution {
+        id
+        name
+        description
+        level {
+          level
+        }
+        leaders {
+          id
+          startDate
+          endDate
+          isActive
+          position {
+            name
+          }
+          candidate {
+            student {
+              user {
+                firstName
+                lastName
+              }
+            }
+          }
+        }
+        electionStats {
+          totalVoters
+          totalVotesCast
+          voterTurnout
+          leadingCandidate {
+            student {
+              user {
+                firstName
+                lastName
+              }
+            }
+          }
+        }
+        voteDistribution
+        voterTurnoutHistory
+        positionBreakdown
+      }
+      parentInstitution {
+        id
+        name
+        level {
+          level
+        }
+      }
+      childInstitutions {
+        id
+        name
+        level {
+          level
+        }
+      }
+      hierarchy
+    }
+  }
+`;
+
+export const GET_ELECTION_DETAILS = gql`
+  query GetElectionDetails($electionId: ID!) {
+    electionDetails(electionId: $electionId) {
+      id
+      name
+      description
+      status
+      startDatetime
+      endDatetime
+      academicYear {
+        name
+      }
+      level {
+        level
+      }
+      institution {
+        id
+        name
+      }
+      statistics {
+        totalVoters
+        totalVotesCast
+        voterTurnout
+        leadingCandidate {
+          student {
+            user {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+      positions {
+        id
+        position {
+          id
+          name
+          description
+        }
+        maxCandidates
+        candidateSet {
+          id
+        }
+      }
+      candidatePerformance
+      timeSeriesData
+      institutionBreakdown
+    }
+  }
+`;
+
+
+export const GET_ELECTION_LIST = gql`
+  query GetElectionList($level: String, $status: String, $academicYear: ID) {
+    electionList(level: $level, status: $status, academicYear: $academicYear) {
+      elections {
+        id
+        name
+        status
+        startDatetime
+        endDatetime
+        academicYear {
+          name
+        }
+        level {
+          level
+        }
+        institution {
+          id
+          name
+        }
+        totalCandidates
+        totalVoters
+        totalVotesCast
+        voterTurnout
+        leadingCandidate
+      }
+      statusDistribution {
+        status
+        count
+      }
+      levelDistribution {
+        level
+        count
+      }
+      yearlyTurnout {
+        year
+        turnout
+        electionCount
+      }
+    }
+  }
+`;
