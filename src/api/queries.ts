@@ -623,6 +623,28 @@ export const SUBSCRIBE_TO_VOTES = gql`
 `;
 
 
+
+// queries.js
+
+export const GET_COLLEGES_WITH_STUDENTS = gql`
+  query GetCollegesWithStudents {
+    allColleges {
+      id
+      name
+      students {
+        id
+        isActive
+        user {
+          id
+          firstName
+          lastName
+          email
+        }
+      }
+    }
+  }
+`;
+
 export const GET_INSTITUTION_BY_LEVEL = gql`
   query GetInstitutionByLevel($level: String!) {
     institutionsByLevel(level: $level) {
@@ -986,3 +1008,4 @@ export const GET_ELECTION_LIST = gql`
     }
   }
 `;
+`
