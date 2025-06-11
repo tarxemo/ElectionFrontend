@@ -20,6 +20,7 @@ import AboutPage from '../pages/AboutPage';
 import FeaturesPage from '../pages/Features';
 import CandidateDetailsPage from '../pages/CandidateDetailsPage';
 import InstitutionDetailsPage from '../pages/InstitutionDetailsPage';
+import VotePage from '../pages/VotePage';
 
 const AppRoutes = () => {
   return (
@@ -46,6 +47,7 @@ const AppRoutes = () => {
 
 
         <Route path="/leader-list" element={<LeadersDashboardPage />} />
+        <Route path="/vote" element={<VotePage />} />
 
         <Route path="/position-list" element={<PositionsPage />} />
         

@@ -1007,5 +1007,110 @@ export const GET_ELECTION_LIST = gql`
       }
     }
   }
-`;
 `
+// src/api/queries.js
+
+export const GET_ACTIVE_ELECTIONS = gql`
+  query GetActiveElections {
+    activeElections {
+      id
+      name
+      description
+      startDatetime
+      endDatetime
+      level {
+        level
+      }
+      institution {
+        name
+      }
+      isActive
+    }
+  }
+`;
+
+export const GET_ELECTION_POSITIONS = gql`
+  query GetElectionPositions($electionId: ID!) {
+    electionPositions(electionId: $electionId) {
+      id
+      position {
+        id
+        name
+        description
+      }
+      maxCandidates
+    }
+  }
+`;
+
+export const GET_POSITION_CANDIDATES = gql`
+  query GetPositionCandidates($electionPositionId: ID!) {
+    positionCandidates(electionPositionId: $electionPositionId) {
+      id
+      student {
+
+        id
+        user {
+          firstName
+          lastName
+        }
+        institution {
+          name
+        }
+      }
+      electionPosition{
+          id
+        }
+      manifesto
+      isApproved
+    }
+  }
+`;
+
+export const CAST_VOTES = gql`
+  mutation CastVotes($input: CastVotesInput!) {
+    castVotes(input: $input) {
+      success
+      message
+      votes {
+        id
+        candidate {
+          id
+          student {
+            user {
+              firstName
+              lastName
+            }
+          }
+        }
+        election {
+          name
+        }
+      }
+    }
+  }
+`;
+
+
+// Add to your existing queries
+export const GET_ELIGIBLE_VOTERS = gql`
+  query GetEligibleVoters($electionId: ID!, $search: String) {
+    eligibleVoters(electionId: $electionId, search: $search) {
+      id
+      user {
+        id
+        firstName
+        lastName
+        username
+      }
+      institution {
+        id
+        name
+        level {
+          level
+        }
+      }
+      isActive
+    }
+  }
+`;

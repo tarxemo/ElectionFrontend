@@ -24,14 +24,14 @@ const HeroSection: React.FC = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link 
-              to="/demo" 
+              to="/position-list" 
               className="relative px-6 py-3.5 text-base font-medium rounded-md text-gray-900 bg-[#FFE31A] hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-[#FFE31A]/30"
             >
               <span className="relative z-10">Live Demo</span>
               <span className="absolute inset-0 rounded-md bg-[#FFE31A] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </Link>
             <Link 
-              to="/features" 
+              to="/position-list" 
               className="px-6 py-3.5 text-base font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 transition-all duration-300 border border-gray-700 hover:border-gray-600"
             >
               Learn More

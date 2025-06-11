@@ -3,7 +3,7 @@ import DemoSection from '../component/DemoSection';
 import FeaturesSection from '../component/FeaturesSection';
 import Footer from '../component/Footer';
 import HeroSection from '../component/HeroSection';
-import Navbar from '../component/Navbar';
+import Navbar from '../components/Navbar';
 import StatsSection from '../component/StatsSection';
 
 const LandingPage: React.FC = () => {
