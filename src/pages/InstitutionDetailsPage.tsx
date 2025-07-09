@@ -1,11 +1,10 @@
-import React from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_INSTITUTION_DETAILS } from '../api/queries';
 import { useParams } from 'react-router-dom';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area
+  LineChart, Line
 } from 'recharts';
 import Navbar from '../components/Navbar';
 import { Link } from "react-router-dom";
@@ -69,7 +68,7 @@ const InstitutionDetailsPage = () => {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="w-32 h-32 rounded-full bg-yellow-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-lg">
-              {institution.name.split(' ').map(word => word[0]).join('').toUpperCase()}
+              {institution.name.split(' ').map((word: any[]) => word[0]).join('').toUpperCase()}
             </div>
             <div className="text-center md:text-left">
               <h1 className="text-4xl font-bold text-yellow-400 mb-2">{institution.name}</h1>
@@ -356,7 +355,7 @@ const InstitutionDetailsPage = () => {
                           nameKey="position"
                           label={({ name }: any) => name}
                         >
-                          {positionBreakdown.map((entry: any, index: number) => (
+                          {positionBreakdown.map((_entry: any, index: number) => (
                             <Cell 
                               key={`cell-${index}`} 
                               fill={COLORS[index % COLORS.length]} 
@@ -369,7 +368,7 @@ const InstitutionDetailsPage = () => {
                             borderColor: '#4B5563',
                             borderRadius: '0.5rem'
                           }}
-                          formatter={(value: any, name: any, props: any) => [
+                          formatter={(value: any, _name: any, props: any) => [
                             `${value} elections`,
                             props.payload.position
                           ]}

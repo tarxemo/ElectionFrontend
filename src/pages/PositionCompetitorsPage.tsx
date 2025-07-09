@@ -29,11 +29,11 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const PositionCompetitorsPage: React.FC = () => {
     const { positionId, electionId } = useParams<{ positionId: string; electionId?: string }>();
-    const [timeSeriesData, setTimeSeriesData] = useState<any[]>([]);
-    const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+    const [_timeSeriesData, setTimeSeriesData] = useState<any[]>([]);
+    const [_lastUpdate, setLastUpdate] = useState<Date | null>(null);
     const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
     const [selectedElection, setSelectedElection] = useState<string | null>(null);
-    const [showCumulative, setShowCumulative] = useState(true);
+    const [showCumulative, _setShowCumulative] = useState(true);
     const [timeGranularity, setTimeGranularity] = useState<'minute' | 'hour' | 'day'>('day');
     // Fetch academic years
     const { data: electionData } = useQuery(GET_ALL_ELECTIONS);
@@ -200,8 +200,8 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
     </div>
   );
 
-  const positionDetails = data?.positionDetails;
-  if (!positionDetails) return null;
+  const positionDetails = data.positionDetails;
+  // if (!positionDetails) return null;
 
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -304,7 +304,7 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
                 AI PREDICTED WINNER
               </h2>
               <span className="bg-blue-400 text-blue-900 px-3 py-1 rounded-full text-sm font-bold">
-                {parseFloat(positionDetails.predictionConfidence).toFixed(2) * 10}% Confidence
+                {(parseFloat(positionDetails?.predictionConfidence).toFixed(2) as unknown as number) * 10}%
               </span>
             </div>
 
@@ -363,7 +363,7 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={positionDetails.predictedWinner.voteRates
-                        .map(rate => ({
+                        .map((rate: { date: string | number | Date; voteCount: any; }) => ({
                           date: new Date(rate.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
                           votes: rate.voteCount
                         }))
@@ -604,7 +604,7 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
           outerRadius={100}
           paddingAngle={3}
           dataKey="value"
-          label={({ name, percentage }) => `${percentage.toFixed(1)}%`}
+          label={({ percentage }) => `${percentage.toFixed(1)}%`}
           labelLine={false}
         >
           {positionDetails.candidates.map((candidate: any, index: number) => (
@@ -631,7 +631,7 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
           layout="vertical" 
           align="right" 
           verticalAlign="middle"
-          formatter={(value, entry, index) => (
+          formatter={(value, _entry, index) => (
             <span className={positionDetails.candidates[index].isWinner ? "text-yellow-400" : "text-gray-300"}>
               {value}
             </span>

@@ -1,6 +1,6 @@
 // src/components/charts/DonutChart.tsx
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { ChartContainer } from './ChartContainer';
 import { ChartDataPoint } from './types';
 
@@ -16,7 +16,6 @@ interface DonutChartProps {
 
 export const DonutChart: React.FC<DonutChartProps> = ({
   data = [],
-  title,
   colors = COLORS,
   innerRadius = 70,
   outerRadius = 90,
@@ -37,7 +36,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           animationDuration={1500}
           animationBegin={0}
         >
-   {Array.isArray(data) && data.map((entry, index) => (
+   {Array.isArray(data) && data.map((_entry, index) => (
   <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
 ))}
 

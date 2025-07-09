@@ -1,4 +1,3 @@
-import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const COLORS = ['#FFE31A', '#4B5563'];
@@ -16,7 +15,7 @@ const VoterTurnoutChart = ({ data }: { data: { name: string; value: number }[] }
           animationDuration={1000}
           animationEasing="ease-out"
         >
-          {data.map((entry, index) => (
+          {data.map((_entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>

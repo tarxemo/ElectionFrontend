@@ -20,7 +20,6 @@ export const ComparativeBarChart: React.FC<ComparativeBarChartProps> = ({
   title,
   xAxisLabel,
   yAxisLabel,
-  barLabel = false,
   colors = COLORS,
 }) => {
   return (
@@ -47,7 +46,7 @@ export const ComparativeBarChart: React.FC<ComparativeBarChartProps> = ({
         />
         <Legend wrapperStyle={{ paddingTop: '20px' }} />
         <Bar dataKey="value" name={title} animationDuration={1500}>
-          {data.map((entry, index) => (
+          {data.map((_entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Bar>

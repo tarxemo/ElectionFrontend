@@ -49,7 +49,7 @@ const CollegeRadialChart: React.FC<{ data: CollegeData[] }> = ({ data }) => {
             borderRadius: '0.5rem',
             color: '#F3F4F6'
           }}
-          formatter={(value, name, props) => {
+          formatter={(_value, _name, props) => {
             const index = props.payload.index;
             return [`${chartData[index].votes} votes`, 'Total Votes'];
           }}          
@@ -62,7 +62,7 @@ const CollegeRadialChart: React.FC<{ data: CollegeData[] }> = ({ data }) => {
           wrapperStyle={{
             paddingLeft: '20px'
           }}
-          formatter={(value, entry, index) => (
+          formatter={(value, _entry, index) => (
             <span className="text-gray-300">
               {value}: {chartData[index].votes.toLocaleString()}
             </span>

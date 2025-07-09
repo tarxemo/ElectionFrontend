@@ -1,6 +1,6 @@
 // src/components/charts/RadarChart.tsx
 import React from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Tooltip, Legend } from 'recharts';
 import { ChartContainer } from './ChartContainer';
 
 interface RadarChartProps {

@@ -11,14 +11,14 @@ import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
 const VotePage = () => {
-  const [selectedElection, setSelectedElection] = useState(null);
-  const [selectedPositions, setSelectedPositions] = useState([]);
-  const [votes, setVotes] = useState({});
+  const [selectedElection, setSelectedElection] = useState<any>(null);
+  const [selectedPositions, setSelectedPositions] = useState<any[]>([]);
+  const [votes, setVotes] = useState<any>([]);
   const [voterSearch, setVoterSearch] = useState('');
-  const [selectedVoter, setSelectedVoter] = useState(null);
+  const [selectedVoter, setSelectedVoter] = useState<any>();
   const [showVoterSelect, setShowVoterSelect] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<any>();
 
   const navigate = useNavigate();
   
@@ -48,7 +48,7 @@ const VotePage = () => {
   const [castVotes, { data: voteResult, loading: votingLoading }] = useMutation(CAST_VOTES);
 
   // Handle election selection
-  const handleElectionSelect = (election) => {
+  const handleElectionSelect = (election: any) => {
     setSelectedElection(election);
     setSelectedPositions([]);
     setVotes({});
@@ -58,7 +58,7 @@ const VotePage = () => {
   };
 
   // Handle position selection
-  const handlePositionSelect = (position) => {
+  const handlePositionSelect = (position: { id: number; }) => {
     if (selectedPositions.some(p => p.id === position.id)) {
       setSelectedPositions(selectedPositions.filter(p => p.id !== position.id));
       const newVotes = {...votes};
@@ -72,7 +72,7 @@ const VotePage = () => {
   };
 
   // Handle candidate selection for a position
-  const handleCandidateSelect = (positionId, candidate) => {
+  const handleCandidateSelect = (positionId: any, candidate: any) => {
     setVotes({
       ...votes,
       [positionId]: candidate
@@ -200,7 +200,7 @@ const VotePage = () => {
               
               {electionsData?.activeElections?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {electionsData.activeElections.map(election => (
+                  {electionsData.activeElections.map((election: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; level: { level: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; institution: { name: any; }; startDatetime: string | number | Date; endDatetime: string | number | Date; }) => (
                     <div 
                       key={election.id}
                       onClick={() => handleElectionSelect(election)}
@@ -239,7 +239,7 @@ const VotePage = () => {
                 </div>
               ) : positionsData?.electionPositions?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {positionsData.electionPositions.map(position => (
+                  {positionsData.electionPositions.map((position: { id: any; position?: any; maxCandidates?: any; }) => (
                     <div 
                       key={position.id}
                       onClick={() => handlePositionSelect(position)}
@@ -269,16 +269,16 @@ const VotePage = () => {
               
               {selectedPositions.map(position => (
                 <PositionCandidates 
-                  key={position.id}
+                  key={position?.id}
                   position={position}
-                  selectedCandidate={votes[position.id]}
-                  onSelectCandidate={(candidate) => handleCandidateSelect(position.id, candidate)}
+                  selectedCandidate={votes[position?.id]}
+                  onSelectCandidate={(candidate: any) => handleCandidateSelect(position?.id, candidate)}
                 />
               ))}
               
-              {errors.positions && (
+              {errors?.positions && (
                 <div className="mt-4 text-red-400">
-                  {errors.positions}
+                  {errors?.positions}
                 </div>
               )}
             </div>
@@ -309,7 +309,7 @@ const VotePage = () => {
                     </div>
                   ) : votersData?.eligibleVoters?.length > 0 ? (
                     <div className="max-h-64 overflow-y-auto">
-                      {votersData.eligibleVoters.map(voter => (
+                      {votersData.eligibleVoters.map((voter: { id: React.Key | null | undefined; user: { firstName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; lastName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; username: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; institution: { name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; level: { level: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; }; }) => (
                         <div 
                           key={voter.id}
                           onClick={() => {
@@ -404,9 +404,9 @@ const VotePage = () => {
           )}
         </div>
         
-        {errors.submit && (
+        {errors?.submit && (
           <div className="mt-4 text-red-400 text-center">
-            {errors.submit}
+            {errors?.submit}
           </div>
         )}
       </div>
@@ -415,7 +415,15 @@ const VotePage = () => {
 };
 
 // Component for displaying candidates for a position
-const PositionCandidates = ({ position, selectedCandidate, onSelectCandidate }) => {
+const PositionCandidates = ({
+  position,
+  selectedCandidate,
+  onSelectCandidate,
+}: {
+  position: any;
+  selectedCandidate: any;
+  onSelectCandidate: (candidate: any) => void;
+}) => {
   const { data, loading } = useQuery(GET_POSITION_CANDIDATES, {
     variables: { electionPositionId: position.id },
     errorPolicy: 'ignore'
@@ -437,7 +445,7 @@ const PositionCandidates = ({ position, selectedCandidate, onSelectCandidate }) 
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-        {data?.positionCandidates?.map(candidate => (
+        {data?.positionCandidates?.map((candidate: { id: React.Key | null | undefined; student: { user: { firstName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; lastName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; institution: { name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; }; manifesto: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
           <div 
             key={candidate.id}
             onClick={() => onSelectCandidate(candidate)}

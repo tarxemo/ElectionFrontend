@@ -1,6 +1,6 @@
 // src/components/charts/AreaChart.tsx
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { ChartContainer } from './ChartContainer';
 import { TimeSeriesDataPoint } from './types';
 
@@ -14,7 +14,6 @@ interface AreaChartProps {
 
 export const AreaChartComponent: React.FC<AreaChartProps> = ({
   data,
-  title,
   xAxisLabel,
   yAxisLabel,
   color = '#FFE31A',

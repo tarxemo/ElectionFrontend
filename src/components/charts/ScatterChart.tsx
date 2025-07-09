@@ -1,6 +1,6 @@
 // src/components/charts/ScatterChart.tsx
 import React from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ChartContainer } from './ChartContainer';
 
 interface ScatterChartProps {
@@ -21,7 +21,6 @@ export const ScatterChartComponent: React.FC<ScatterChartProps> = ({
   yDataKey,
   zDataKey,
   name,
-  title,
   xAxisLabel,
   yAxisLabel,
   color = '#FFE31A',

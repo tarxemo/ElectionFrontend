@@ -4,8 +4,6 @@ import { useQuery, useSubscription } from '@apollo/client';
 import { DASHBOARD_STATS, SUBSCRIBE_TO_ACTIVE_ELECTIONS } from '../api/queries';
 import Navbar from '../components/Navbar';
 import {
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -28,9 +26,7 @@ import {
   faExclamationTriangle,
   faCheckCircle,
   faClock,
-  faTrophy,
-  faUniversity,
-  faUserTie
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
@@ -68,8 +64,6 @@ const DashboardPage: React.FC = () => {
   );
 
   const dashboardData = data?.dashboardStats;
-  const positionsWithMostContests = data?.positionsWithMostContests || [];
-  const institutionsWithMostActivity = data?.institutionsWithMostActivity || [];
 
   // Prepare data for charts
   const electionStatusData = [
@@ -78,14 +72,8 @@ const DashboardPage: React.FC = () => {
     { name: 'Upcoming', value: dashboardData?.upcomingElections, icon: faClock }
   ];
 
-  const institutionActivityData = institutionsWithMostActivity.map(inst => ({
-    name: inst.institution.name,
-    elections: inst.electionCount,
-    votes: inst.voteCount,
-    level: inst.institution.level.level
-  })).slice(0, 5); // Only show top 5 for the chart
 
-  const recentElectionsData = dashboardData?.recentElections?.map(election => ({
+  const recentElectionsData = dashboardData?.recentElections?.map((election: { name: any; startDatetime: string | number | Date; totalVoters: any; totalVotesCast: any; }) => ({
     name: election.name,
     startDate: new Date(election.startDatetime).toLocaleDateString(),
     voters: election.totalVoters,
@@ -93,12 +81,6 @@ const DashboardPage: React.FC = () => {
   })) || [];
 
   // Prepare data for position contest chart
-  const positionContestData = positionsWithMostContests.map(pos => ({
-    name: pos.position.name,
-    elections: pos.electionCount,
-    candidates: pos.candidateCount,
-    institution: pos.position.institution?.name || 'All'
-  })).slice(0, 5); // Only show top 5 for the chart
 
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -178,7 +160,7 @@ const DashboardPage: React.FC = () => {
                     nameKey="name"
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
-                    {electionStatusData.map((entry, index) => (
+                    {electionStatusData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

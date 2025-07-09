@@ -14,7 +14,6 @@ interface StackedBarChartProps {
 export const StackedBarChart: React.FC<StackedBarChartProps> = ({
   data,
   bars,
-  title,
   xAxisLabel,
   yAxisLabel,
 }) => {

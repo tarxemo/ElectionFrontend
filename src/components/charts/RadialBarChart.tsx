@@ -3,7 +3,6 @@ import {
   RadialBarChart,
   RadialBar,
   Legend,
-  ResponsiveContainer,
   Tooltip,
   Cell,
 } from 'recharts';
@@ -22,7 +21,6 @@ interface RadialBarChartProps {
 
 export const RadialBarChartComponent: React.FC<RadialBarChartProps> = ({
   data,
-  title,
   colors = COLORS,
   innerRadius = 20,
   outerRadius = 140,
@@ -46,7 +44,7 @@ export const RadialBarChartComponent: React.FC<RadialBarChartProps> = ({
             animationDuration: 1500,
           }}
         >
-          {data.map((entry, index) => (
+          {data.map((_entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </RadialBar>

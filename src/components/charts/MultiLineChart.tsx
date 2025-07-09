@@ -14,7 +14,6 @@ interface MultiLineChartProps {
 export const MultiLineChart: React.FC<MultiLineChartProps> = ({
   data,
   lines,
-  title,
   xAxisLabel,
   yAxisLabel,
 }) => {

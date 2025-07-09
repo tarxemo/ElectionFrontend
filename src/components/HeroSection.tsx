@@ -1,5 +1,4 @@
 // src/components/sections/HeroSection.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import PositionResults from './CollegesResults';
 import CollegeList from '../pages/CollegeList';

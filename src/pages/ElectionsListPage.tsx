@@ -3,8 +3,8 @@ import { useQuery } from '@apollo/client';
 import { GET_ELECTION_LIST } from '../api/queries';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area, ScatterChart, Scatter
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line
 } from 'recharts';
 import Navbar from '../components/Navbar';
 import { Link } from "react-router-dom";
@@ -26,7 +26,7 @@ const ElectionListPage = () => {
     }
   });
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
@@ -145,7 +145,7 @@ const ElectionListPage = () => {
                     nameKey="status"
                     label={({ status, count }) => `${status}: ${count}`}
                   >
-                    {statusDistribution.map((entry, index) => (
+                    {statusDistribution.map((_entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -235,7 +235,7 @@ const ElectionListPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {elections.map((election) => (
+                {elections.map((election: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; status: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; level: { level: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; institution: { name: any; }; startDatetime: string | number | Date; endDatetime: string | number | Date; voterTurnout: number; totalCandidates: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
                   <tr key={election.id} className="hover:bg-gray-700 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link 

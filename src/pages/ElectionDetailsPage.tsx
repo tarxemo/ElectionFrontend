@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  LineChart, Line, AreaChart, Area, ComposedChart
+  Line, AreaChart, Area, ComposedChart
 } from 'recharts';
 import Navbar from '../components/Navbar';
 import { Link } from "react-router-dom";
@@ -68,7 +68,7 @@ const ElectionDetailsPage = () => {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="w-32 h-32 rounded-full bg-yellow-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-lg">
-              {election.name.split(' ').map(word => word[0]).join('').toUpperCase()}
+              {election.name.split(' ').map((word: any[]) => word[0]).join('').toUpperCase()}
             </div>
             <div className="text-center md:text-left">
               <h1 className="text-4xl font-bold text-yellow-400 mb-2">{election.name}</h1>
@@ -190,7 +190,7 @@ const ElectionDetailsPage = () => {
                 Election Positions
               </h2>
               <div className="space-y-3">
-                {election.positions.map(position => (
+                {election.positions.map((position: { position: { id: any; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; description: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; id: React.Key | null | undefined; candidateSet: string | any[]; maxCandidates: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
                   <Link
                     to={`/position/${position.position.id}`}
                     key={position.id}
@@ -257,7 +257,7 @@ const ElectionDetailsPage = () => {
                         fill="#8884d8" 
                         barSize={20}
                       >
-                        {parsedCandidatePerformance.map((entry, index) => (
+                        {parsedCandidatePerformance.map((entry: { is_winner: any; }, index: any) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={entry.is_winner ? '#FFD700' : '#8884d8'} 
@@ -343,7 +343,7 @@ const ElectionDetailsPage = () => {
                           nameKey="name"
                           label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
                         >
-                          {parsedInstitutionBreakdown.map((entry, index) => (
+                          {parsedInstitutionBreakdown.map((_entry: any, index: number) => (
                             <Cell 
                               key={`cell-${index}`} 
                               fill={COLORS[index % COLORS.length]} 
@@ -356,7 +356,7 @@ const ElectionDetailsPage = () => {
                             borderColor: '#4B5563',
                             borderRadius: '0.5rem'
                           }}
-                          formatter={(value, name, props) => [
+                          formatter={(value, _name, props) => [
                             `${value} votes (${props.payload.percentage.toFixed(1)}%)`,
                             props.payload.name
                           ]}
@@ -382,7 +382,7 @@ const ElectionDetailsPage = () => {
                             borderColor: '#4B5563',
                             borderRadius: '0.5rem'
                           }}
-                          formatter={(value, name, props) => [
+                          formatter={(value, _name, props) => [
                             `${value} votes (${props.payload.percentage.toFixed(1)}%)`,
                             props.payload.name
                           ]}
@@ -405,8 +405,8 @@ const ElectionDetailsPage = () => {
                 <h2 className="text-2xl font-bold text-yellow-400 mb-4">Election Winners</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {parsedCandidatePerformance
-                  .filter(candidate => candidate.is_winner)
-                  .map(winner => (
+                  .filter((candidate: { is_winner: any; }) => candidate.is_winner)
+                  .map((winner: { candidate_id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; position: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; votes: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; percentage: number; }) => (
                     <Link
                       to={`/candidate/${winner.candidate_id}`}
                       key={winner.candidate_id}

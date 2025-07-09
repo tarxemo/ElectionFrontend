@@ -1,13 +1,15 @@
 // src/components/charts/ChartContainer.tsx
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ResponsiveContainer } from 'recharts';
 
 interface ChartContainerProps {
-  children: React.ReactNode;
+  children: ReactElement;
   height?: number | string;
   aspect?: number;
   className?: string;
+  compact?: boolean; // ✅ Add this line
 }
+
 
 export const ChartContainer: React.FC<ChartContainerProps> = ({
   children,

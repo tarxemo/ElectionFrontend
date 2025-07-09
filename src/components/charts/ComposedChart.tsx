@@ -18,7 +18,6 @@ export const ComposedChartComponent: React.FC<ComposedChartProps> = ({
   bars = [],
   lines = [],
   areas = [],
-  title,
   xAxisLabel,
   yAxisLabel,
 }) => {

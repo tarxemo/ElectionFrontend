@@ -10,14 +10,13 @@ import CollegeListPage from '../pages/CollegeListPage';
 import CollegeDetailsPage from '../pages/CollegeDetailsPage';
 import ElectionsListPage from '../pages/ElectionsListPage';
 import ElectionDetailsPage from '../pages/ElectionDetailsPage';
-import WonLeadersPage from '../pages/WonLeadersPage';
 // import LandingPage from '../pages/LandingPage';
-import LeadersDashboardPage from '../pages/LeadersDashboardPage';
+// import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
 import CollegeList from '../pages/CollegeList';
 import AboutPage from '../pages/AboutPage';
-import FeaturesPage from '../pages/Features';
+// import FeaturesPage from '../pages/Features';
 import CandidateDetailsPage from '../pages/CandidateDetailsPage';
 import InstitutionDetailsPage from '../pages/InstitutionDetailsPage';
 import VotePage from '../pages/VotePage';
@@ -37,17 +36,16 @@ const AppRoutes = () => {
         <Route path="/college-list" element={<CollegeListPage />} />
         <Route path='/college/:collegeId' element={< CollegeDetailsPage/>}/>
         <Route path='/about' element={< AboutPage/>}/>
-        <Route path='/features' element={< FeaturesPage/>}/>
+        {/* <Route path='/features' element={< FeaturesPage/>}/> */}
 
         <Route path="/election-list" element={<ElectionsListPage />} />
         <Route path="/college-list" element={<CollegeList />} />
         <Route path='/election/:electionId' element={< ElectionDetailsPage/>}/>
         
-        <Route path='/leaders/:electionId' element={< WonLeadersPage/>}/>
         {/* <Route path='/institution/:institutionId' element={< InstitutionDetails/>}/> */}
 
 
-        <Route path="/leader-list" element={<LeadersDashboardPage />} />
+        {/* <Route path="/leader-list" element={<LeadersDashboardPage />} /> */}
         <Route path="/vote" element={<VotePage />} />
 
         <Route path="/position-list" element={<PositionsPage />} />

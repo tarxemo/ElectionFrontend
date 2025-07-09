@@ -3,11 +3,10 @@ import { useQuery } from '@apollo/client';
 import { GET_CANDIDATE_DETAILS } from '../api/queries';
 import { useParams } from 'react-router-dom';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   AreaChart, Area, RadialBarChart, RadialBar
 } from 'recharts';
-import { Rating } from 'react-simple-star-rating';
 import Navbar from '../components/Navbar';
 import { Link } from "react-router-dom";
 import { StarRatingDisplay } from '../components/StarRatingDisplay';
@@ -23,12 +22,12 @@ const CandidateDetailsPage: React.FC = () => {
   // Pagination and search state
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredRatings, setFilteredRatings] = useState([]);
+  const [filteredRatings, setFilteredRatings] = useState<any[]>([]);
   const ratingsPerPage = 5;
 
   useEffect(() => {
     if (data?.candidateDetails?.ratings) {
-      const filtered = data.candidateDetails.ratings.filter(rating => {
+      const filtered = data.candidateDetails.ratings.filter((rating: { student: { user: { firstName: any; lastName: any; }; }; comment: string; }) => {
         const searchLower = searchTerm.toLowerCase();
         const name = `${rating.student.user.firstName} ${rating.student.user.lastName}`.toLowerCase();
         const comment = rating.comment ? rating.comment.toLowerCase() : '';
@@ -268,10 +267,10 @@ const CandidateDetailsPage: React.FC = () => {
                         outerRadius={80}
                         innerRadius={40}
                         dataKey="voteCount"
-                        label={({ name, votePercentage }) => `${votePercentage.toFixed(1)}%`}
+                        label={({ votePercentage }) => `${votePercentage.toFixed(1)}%`}
                         labelLine={false}
                       >
-                        {voteStatistics.voteDistribution.map((entry, index) => (
+                        {voteStatistics.voteDistribution.map((entry: { isWinner: any; }, index: number) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={COLORS[index % COLORS.length]} 
@@ -314,12 +313,11 @@ const CandidateDetailsPage: React.FC = () => {
                       data={voteStatistics.institutionalBreakdown}
                     >
                       <RadialBar 
-                        minAngle={15}
                         label={{ position: 'insideStart', fill: '#fff' }}
                         background
                         dataKey="votePercentage"
                       >
-                        {voteStatistics.institutionalBreakdown.map((entry, index) => (
+                        {voteStatistics.institutionalBreakdown.map((_entry: any, index: number) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={COLORS[index % COLORS.length]} 
@@ -337,7 +335,7 @@ const CandidateDetailsPage: React.FC = () => {
                           borderColor: '#4B5563',
                           borderRadius: '0.5rem'
                         }}
-                        formatter={(value, name, props) => [
+                        formatter={(value, _name, props) => [
                           `${props.payload.voteCount} votes (${value}%)`,
                           props.payload.institutionName
                         ]}
@@ -397,7 +395,7 @@ const CandidateDetailsPage: React.FC = () => {
                   Competitors
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {competitors.map((competitor, index) => (
+                  {competitors.map((competitor: { id: React.Key | null | undefined; isWinner: any; student: { user: { firstName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; lastName: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; institution: { name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }; }; voteCount: any; votePercentage: number; }) => (
                     <Link 
                       to={`/candidate/${competitor.id}`} 
                       key={competitor.id}
@@ -408,8 +406,11 @@ const CandidateDetailsPage: React.FC = () => {
                       }`}>
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-gray-900">
-                            {competitor.student.user.firstName.charAt(0)}{competitor.student.user.lastName.charAt(0)}
+                            {String(competitor.student.user.firstName ?? '').charAt(0)}
+                            {String(competitor.student.user.lastName ?? '').charAt(0)}
                           </div>
+
+
                           <div>
                             <h3 className="font-semibold text-white">
                               {competitor.student.user.firstName} {competitor.student.user.lastName}
@@ -538,7 +539,7 @@ const CandidateDetailsPage: React.FC = () => {
                   Promise Tracker
                 </h2>
                 <div className="space-y-4">
-                  {promises.map(promise => (
+                  {promises.map((promise: { id: React.Key | null | undefined; title: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; description: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; promiseUpdates: any[]; }) => (
                     <div 
                       key={promise.id} 
                       className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors duration-200"
@@ -548,7 +549,7 @@ const CandidateDetailsPage: React.FC = () => {
                       
                       {promise.promiseUpdates?.length > 0 && (
                         <div className="mt-3 space-y-3">
-                          {promise.promiseUpdates.map(update => (
+                          {promise.promiseUpdates.map((update: { id: React.Key | null | undefined; status: string; timestamp: string | number | Date; update: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
                             <div 
                               key={update.id} 
                               className={`pl-3 border-l-4 ${

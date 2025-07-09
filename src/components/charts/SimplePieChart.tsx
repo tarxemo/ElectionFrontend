@@ -1,6 +1,6 @@
 // src/components/charts/SimplePieChart.tsx
 import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { ChartContainer } from './ChartContainer';
 import { ChartDataPoint } from './types';
 
@@ -17,7 +17,6 @@ interface SimplePieChartProps {
 
 export const SimplePieChart: React.FC<SimplePieChartProps> = ({
   data,
-  title,
   colors = COLORS,
   innerRadius = 60,
   outerRadius = 80,
@@ -40,7 +39,7 @@ export const SimplePieChart: React.FC<SimplePieChartProps> = ({
           animationDuration={1500}
           animationBegin={0}
         >
-          {data.map((entry, index) => (
+          {data.map((_entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>

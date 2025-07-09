@@ -36,15 +36,17 @@ const TimeSeriesLineChart: React.FC<TimeSeriesLineChartProps> = ({
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
           <XAxis 
             dataKey="date" 
-            label={xAxisLabel ? { value: xAxisLabel, offset: -10, position: 'insideBottom', fill: '#9CA3AF' } : null}
+            label={xAxisLabel ? { value: xAxisLabel, offset: -10, position: 'insideBottom', fill: '#9CA3AF' } : undefined}
             tick={{ fill: '#9CA3AF' }}
             axisLine={{ stroke: '#4B5563' }}
           />
+
           <YAxis 
-            label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: 'insideLeft', fill: '#9CA3AF' } : null}
+            label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: 'insideLeft', fill: '#9CA3AF' } : undefined}
             tick={{ fill: '#9CA3AF' }}
             axisLine={{ stroke: '#4B5563' }}
           />
+
           <Tooltip 
             contentStyle={{
               backgroundColor: '#1F2937',
