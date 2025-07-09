@@ -22,26 +22,30 @@ const VotePage = () => {
 
   const navigate = useNavigate();
   
-  // Fetch active elections
-  const { data: electionsData, loading: electionsLoading, error: electionsError } = useQuery(GET_ACTIVE_ELECTIONS);
+  // Fetch active elections - ignore errors if we're getting data
+  const { data: electionsData, loading: electionsLoading } = useQuery(GET_ACTIVE_ELECTIONS, {
+    errorPolicy: 'all'
+  });
   
   // Fetch positions for selected election
   const { data: positionsData, loading: positionsLoading } = useQuery(GET_ELECTION_POSITIONS, {
     variables: { electionId: selectedElection?.id },
-    skip: !selectedElection
+    skip: !selectedElection,
+    errorPolicy: 'all'
   });
   
-  // Query for eligible voters
+  // Query for eligible voters - ignore errors if we're getting data
   const { data: votersData, loading: votersLoading } = useQuery(GET_ELIGIBLE_VOTERS, {
     variables: { 
       electionId: selectedElection?.id,
       search: voterSearch 
     },
-    skip: !selectedElection
+    skip: !selectedElection,
+    errorPolicy: 'all'
   });
   
   // Mutation for casting votes
-  const [castVotes, { data: voteResult, loading: votingLoading, error: votingError }] = useMutation(CAST_VOTES);
+  const [castVotes, { data: voteResult, loading: votingLoading }] = useMutation(CAST_VOTES);
 
   // Handle election selection
   const handleElectionSelect = (election) => {
@@ -110,20 +114,18 @@ const VotePage = () => {
       });
     } catch (error) {
       console.error("Error casting votes:", error);
+      setErrors({ submit: 'Failed to submit votes. Please try again.' });
     }
   };
 
   // Handle successful vote submission
   useEffect(() => {
-    if (voteResult?.castVotes?.success) {
-      navigate('/vote', { 
-        state: { 
-          electionName: selectedElection.name,
-          votes: voteResult.castVotes.votes 
-        } 
-      });
+    if (voteResult?.castVotes && selectedPositions.length > 0) {
+      // Redirect to the first position's results page
+      const firstPositionId = selectedPositions[0].position.id;
+      navigate(`/position/${firstPositionId}`);
     }
-  }, [voteResult, navigate, selectedElection]);
+  }, [voteResult, navigate, selectedPositions]);
 
   // Navigation between steps
   const nextStep = () => {
@@ -146,11 +148,12 @@ const VotePage = () => {
     </div>
   );
   
-  if (electionsError) return (
+  // Only show error if we have no data
+  if (!electionsData?.activeElections) return (
     <div className="bg-gray-900 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8 text-center text-red-400">
-        Error loading elections: {electionsError.message}
+        Error loading elections data. Please try again later.
       </div>
     </div>
   );
@@ -195,26 +198,32 @@ const VotePage = () => {
             <div>
               <h2 className="text-2xl font-bold text-purple-400 mb-4">1. Select Election</h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {electionsData?.activeElections?.map(election => (
-                  <div 
-                    key={election.id}
-                    onClick={() => handleElectionSelect(election)}
-                    className={`p-4 rounded-lg cursor-pointer transition-all ${
-                      selectedElection?.id === election.id 
-                        ? 'bg-purple-600 border-2 border-purple-400' 
-                        : 'bg-gray-700 hover:bg-gray-600 border border-gray-600'
-                    }`}
-                  >
-                    <h3 className="font-bold text-lg">{election.name}</h3>
-                    <p className="text-sm text-gray-300">{election.level.level} - {election.institution?.name || 'General'}</p>
-                    <p className="text-xs mt-2">
-                      {new Date(election.startDatetime).toLocaleString()} to<br />
-                      {new Date(election.endDatetime).toLocaleString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              {electionsData?.activeElections?.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {electionsData.activeElections.map(election => (
+                    <div 
+                      key={election.id}
+                      onClick={() => handleElectionSelect(election)}
+                      className={`p-4 rounded-lg cursor-pointer transition-all ${
+                        selectedElection?.id === election.id 
+                          ? 'bg-purple-600 border-2 border-purple-400' 
+                          : 'bg-gray-700 hover:bg-gray-600 border border-gray-600'
+                      }`}
+                    >
+                      <h3 className="font-bold text-lg">{election.name}</h3>
+                      <p className="text-sm text-gray-300">{election.level.level} - {election.institution?.name || 'General'}</p>
+                      <p className="text-xs mt-2">
+                        {new Date(election.startDatetime).toLocaleString()} to<br />
+                        {new Date(election.endDatetime).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  No active elections available at this time.
+                </div>
+              )}
             </div>
           )}
           
@@ -228,9 +237,9 @@ const VotePage = () => {
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-400 mx-auto"></div>
                   <p className="mt-2">Loading positions...</p>
                 </div>
-              ) : (
+              ) : positionsData?.electionPositions?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {positionsData?.electionPositions?.map(position => (
+                  {positionsData.electionPositions.map(position => (
                     <div 
                       key={position.id}
                       onClick={() => handlePositionSelect(position)}
@@ -244,6 +253,10 @@ const VotePage = () => {
                       <p className="text-sm text-gray-300">Select {position.maxCandidates} candidate(s)</p>
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  No positions available for this election.
                 </div>
               )}
             </div>
@@ -294,34 +307,32 @@ const VotePage = () => {
                       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-400 mx-auto"></div>
                       <p className="mt-2">Loading eligible voters...</p>
                     </div>
-                  ) : (
+                  ) : votersData?.eligibleVoters?.length > 0 ? (
                     <div className="max-h-64 overflow-y-auto">
-                      {votersData?.eligibleVoters?.length > 0 ? (
-                        votersData.eligibleVoters.map(voter => (
-                          <div 
-                            key={voter.id}
-                            onClick={() => {
-                              setSelectedVoter(voter);
-                              setShowVoterSelect(false);
-                            }}
-                            className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
-                          >
-                            <div className="flex justify-between">
-                              <span className="font-medium">
-                                {voter.user.firstName} {voter.user.lastName}
-                              </span>
-                              <span className="text-sm text-gray-400">{voter.user.username}</span>
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              {voter.institution.name} ({voter.institution.level.level})
-                            </div>
+                      {votersData.eligibleVoters.map(voter => (
+                        <div 
+                          key={voter.id}
+                          onClick={() => {
+                            setSelectedVoter(voter);
+                            setShowVoterSelect(false);
+                          }}
+                          className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
+                        >
+                          <div className="flex justify-between">
+                            <span className="font-medium">
+                              {voter.user.firstName} {voter.user.lastName}
+                            </span>
+                            <span className="text-sm text-gray-400">{voter.user.username}</span>
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-4 text-gray-400">
-                          {voterSearch ? 'No matching voters found' : 'No eligible voters found'}
+                          <div className="text-sm text-gray-400">
+                            {voter.institution.name} ({voter.institution.level.level})
+                          </div>
                         </div>
-                      )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-gray-400">
+                      {voterSearch ? 'No matching voters found' : 'No eligible voters found'}
                     </div>
                   )}
                 </>
@@ -393,9 +404,9 @@ const VotePage = () => {
           )}
         </div>
         
-        {votingError && (
+        {errors.submit && (
           <div className="mt-4 text-red-400 text-center">
-            Error submitting votes: {votingError.message}
+            {errors.submit}
           </div>
         )}
       </div>
@@ -405,8 +416,9 @@ const VotePage = () => {
 
 // Component for displaying candidates for a position
 const PositionCandidates = ({ position, selectedCandidate, onSelectCandidate }) => {
-  const { data, loading, error } = useQuery(GET_POSITION_CANDIDATES, {
-    variables: { electionPositionId: position.id }
+  const { data, loading } = useQuery(GET_POSITION_CANDIDATES, {
+    variables: { electionPositionId: position.id },
+    errorPolicy: 'ignore'
   });
   
   return (
@@ -417,12 +429,6 @@ const PositionCandidates = ({ position, selectedCandidate, onSelectCandidate }) 
         <div className="text-center py-4">
           <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-yellow-400 mx-auto"></div>
           <p className="mt-2">Loading candidates...</p>
-        </div>
-      )}
-      
-      {error && (
-        <div className="text-red-400">
-          Error loading candidates: {error.message}
         </div>
       )}
       

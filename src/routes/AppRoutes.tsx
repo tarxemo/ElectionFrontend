@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 // import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
@@ -11,7 +11,7 @@ import CollegeDetailsPage from '../pages/CollegeDetailsPage';
 import ElectionsListPage from '../pages/ElectionsListPage';
 import ElectionDetailsPage from '../pages/ElectionDetailsPage';
 import WonLeadersPage from '../pages/WonLeadersPage';
-import LandingPage from '../pages/LandingPage';
+// import LandingPage from '../pages/LandingPage';
 import LeadersDashboardPage from '../pages/LeadersDashboardPage';
 import PositionsPage from '../pages/PositionsPage';
 import PositionCompetitorsPage from '../pages/PositionCompetitorsPage';
@@ -21,12 +21,13 @@ import FeaturesPage from '../pages/Features';
 import CandidateDetailsPage from '../pages/CandidateDetailsPage';
 import InstitutionDetailsPage from '../pages/InstitutionDetailsPage';
 import VotePage from '../pages/VotePage';
+import DashboardPage from '../pages/DashboardPage';
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/contact-us" element={<ContactUsPage />} />
         <Route path="/admin" element={<AdminHomepage />} />
@@ -50,6 +51,7 @@ const AppRoutes = () => {
         <Route path="/vote" element={<VotePage />} />
 
         <Route path="/position-list" element={<PositionsPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         
         <Route path="/position/:positionId" element={<PositionCompetitorsPage />} />
 

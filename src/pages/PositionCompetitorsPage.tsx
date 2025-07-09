@@ -19,7 +19,9 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  AreaChart,
+  Area
 } from 'recharts';
 import { Link } from "react-router-dom";
 
@@ -290,6 +292,128 @@ const formatDateForDisplay = (dateString: string, granularity: string) => {
             )}
           </div>
         </div>
+
+
+        {positionDetails.predictedWinner && !positionDetails.winner && (
+          <div className="bg-gradient-to-r from-gray-900 to-gray-700 p-6 rounded-lg mb-8 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                AI PREDICTED WINNER
+              </h2>
+              <span className="bg-blue-400 text-blue-900 px-3 py-1 rounded-full text-sm font-bold">
+                {parseFloat(positionDetails.predictionConfidence).toFixed(2) * 10}% Confidence
+              </span>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Candidate Profile */}
+              <div className="flex items-center bg-gray-800 bg-opacity-50 p-4 rounded-lg flex-1">
+                <div className="bg-white text-blue-800 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mr-4">
+                  {positionDetails.predictedWinner.student.user.firstName.charAt(0)}
+                  {positionDetails.predictedWinner.student.user.lastName.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">
+                    {positionDetails.predictedWinner.student.user.fullName}
+                  </h3>
+                  <p className="text-blue-200">
+                    {positionDetails.predictedWinner.student.institution.parent?.name || ''}
+                    {positionDetails.predictedWinner.student.institution.parent?.name && ' • '}
+                    {positionDetails.predictedWinner.student.institution.name}
+                  </p>
+                </div>
+              </div>
+
+              {/* Vote Stats */}
+              <div className="bg-gray-800 bg-opacity-30 p-4 rounded-lg flex-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-blue-300 text-sm">Current Votes</p>
+                    <p className="text-3xl font-bold text-white">
+                      {positionDetails.predictedWinner.voteCount}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-blue-300 text-sm">Vote Percentage</p>
+                    <p className="text-3xl font-bold text-white">
+                      {positionDetails.predictedWinner.votePercentage.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <p className="text-blue-300 text-sm mb-1">Prediction Confidence</p>
+                  <div className="w-full bg-blue-900 bg-opacity-50 rounded-full h-3">
+                    <div 
+                      className="bg-blue-400 h-3 rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, parseFloat(positionDetails.predictionConfidence) * 10)}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Voting Trend */}
+              <div className="bg-gray-800 bg-opacity-30 p-4 rounded-lg flex-1">
+                <h4 className="text-blue-200 text-sm font-semibold mb-2">VOTING TREND</h4>
+                <div className="h-24">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={positionDetails.predictedWinner.voteRates
+                        .map(rate => ({
+                          date: new Date(rate.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                          votes: rate.voteCount
+                        }))
+                        .reverse()
+                      }
+                    >
+                      <defs>
+                        <linearGradient id="colorVotes" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#93C5FD" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#1E40AF" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <Area 
+                        type="monotone" 
+                        dataKey="votes" 
+                        stroke="#60A5FA" 
+                        fillOpacity={1} 
+                        fill="url(#colorVotes)" 
+                      />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10, fill: '#BFDBFE' }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1E40AF',
+                          borderColor: '#3B82F6',
+                          borderRadius: '0.5rem'
+                        }}
+                        labelStyle={{ color: '#EFF6FF' }}
+                        formatter={(value) => [`${value} votes`, 'Votes']}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Prediction Disclaimer */}
+            <div className="mt-4 text-blue-200 text-xs italic">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              This prediction is based on current voting patterns and historical data. Actual results may vary.
+            </div>
+          </div>
+        )}
+
 
         {/* Winner Banner (if election completed) */}
         {positionDetails.winner && (

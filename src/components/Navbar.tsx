@@ -12,6 +12,12 @@ const Navbar: React.FC = () => {
   const navLinks = (
     <>
       <Link
+        to="/dashboard"
+        className="text-gray-300 hover:text-[#FFE31A] px-3 py-2 rounded-md text-sm font-medium transition duration-300"
+      >
+        Dashboard
+      </Link>
+      <Link
         to="/vote"
         className="text-gray-300 hover:text-[#FFE31A] px-3 py-2 rounded-md text-sm font-medium transition duration-300"
       >
@@ -21,7 +27,7 @@ const Navbar: React.FC = () => {
         to="/position-list"
         className="text-gray-300 hover:text-[#FFE31A] px-3 py-2 rounded-md text-sm font-medium transition duration-300"
       >
-        Live Demo
+        Live
       </Link>
       <Link
         to="/election-list"

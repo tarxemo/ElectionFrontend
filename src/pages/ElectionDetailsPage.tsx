@@ -8,7 +8,7 @@ import {
   LineChart, Line, AreaChart, Area, ComposedChart
 } from 'recharts';
 import Navbar from '../components/Navbar';
-
+import { Link } from "react-router-dom";
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const ElectionDetailsPage = () => {
@@ -191,18 +191,24 @@ const ElectionDetailsPage = () => {
               </h2>
               <div className="space-y-3">
                 {election.positions.map(position => (
-                  <div key={position.id} className="bg-gray-700 rounded-lg p-3 hover:bg-gray-600 transition-colors">
-                    <h3 className="font-semibold">{position.position.name}</h3>
-                    <p className="text-sm text-gray-400">{position.position.description}</p>
-                    <div className="mt-2 flex justify-between text-xs">
-                      <span className="text-yellow-400">
-                        {position.candidateSet?.length} candidates
-                      </span>
-                      <span className="text-gray-400">
-                        Max: {position.maxCandidates}
-                      </span>
+                  <Link
+                    to={`/position/${position.position.id}`}
+                    key={position.id}
+                    className="block"
+                  >
+                    <div className="bg-gray-700 rounded-lg p-3 hover:bg-gray-600 transition-colors cursor-pointer">
+                      <h3 className="font-semibold">{position.position.name}</h3>
+                      <p className="text-sm text-gray-400">{position.position.description}</p>
+                      <div className="mt-2 flex justify-between text-xs">
+                        <span className="text-yellow-400">
+                          {position.candidateSet?.length} candidates
+                        </span>
+                        <span className="text-gray-400">
+                          Max: {position.maxCandidates}
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -398,10 +404,15 @@ const ElectionDetailsPage = () => {
               <div className="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
                 <h2 className="text-2xl font-bold text-yellow-400 mb-4">Election Winners</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {parsedCandidatePerformance
-                    .filter(candidate => candidate.is_winner)
-                    .map(winner => (
-                      <div key={winner.candidate_id} className="bg-gray-700 rounded-lg p-4 border-l-4 border-yellow-400">
+                {parsedCandidatePerformance
+                  .filter(candidate => candidate.is_winner)
+                  .map(winner => (
+                    <Link
+                      to={`/candidate/${winner.candidate_id}`}
+                      key={winner.candidate_id}
+                      className="block"
+                    >
+                      <div className="bg-gray-700 rounded-lg p-4 border-l-4 border-yellow-400 hover:bg-gray-600 transition-colors cursor-pointer">
                         <h3 className="font-semibold text-white">{winner.name}</h3>
                         <p className="text-gray-400">{winner.position}</p>
                         <div className="mt-3 flex justify-between items-center">
@@ -414,7 +425,8 @@ const ElectionDetailsPage = () => {
                           </span>
                         </div>
                       </div>
-                    ))}
+                    </Link>
+                ))}
                 </div>
               </div>
             )}

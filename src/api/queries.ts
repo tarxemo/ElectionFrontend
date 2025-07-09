@@ -541,6 +541,7 @@ query MyQuery {
 }`
 
 // api/queries.ts
+// api/queries.ts
 export const GET_POSITION_DETAILS = gql`
   query GetPositionDetails(
     $positionId: ID!, 
@@ -565,6 +566,26 @@ export const GET_POSITION_DETAILS = gql`
           id
           name
         }
+        electionpositionSet {
+          aiFraudIndicators
+          aiFraudRisk
+          aiLastAnalysis
+          aiPredictionConfidence
+          aiWinPrediction {
+            id
+            manifesto
+            isApproved
+            approvedAt
+            createdAt
+            student {
+              id
+              user {
+                firstName
+                lastName
+              }
+            }
+          }
+        }
       }
       isElectionActive
       totalVoters
@@ -581,6 +602,34 @@ export const GET_POSITION_DETAILS = gql`
         voteCount
         votePercentage
       }
+    predictedWinner {
+      id
+      isApproved
+      student {
+        user {
+          email
+          firstName
+          fullName
+          id
+          lastName
+          username
+        }
+        institution {
+          name
+          voteDistribution
+          parent {
+            name
+          }
+        }
+      }
+      voteCount
+      votePercentage
+      voteRates {
+        date
+        voteCount
+      }
+    }
+      predictionConfidence
       candidates {
         id
         student {
@@ -601,6 +650,7 @@ export const GET_POSITION_DETAILS = gql`
         voteCount
         votePercentage
         isWinner
+        isPredictedWinner
         promisesCount
         rating
       }
@@ -1082,6 +1132,11 @@ export const CAST_VOTES = gql`
               lastName
             }
           }
+          electionPosition {
+            position {
+              id
+            }
+          }
         }
         election {
           name
@@ -1111,6 +1166,115 @@ export const GET_ELIGIBLE_VOTERS = gql`
         }
       }
       isActive
+    }    positionsWithMostContests {
+      position {
+        id
+        name
+        description
+        institution {
+          name
+        }
+      }
+      electionCount
+      candidateCount
+      averageVotesPerElection
+      mostContestedElection {
+        id
+        name
+        totalVotesCast
+      }
+    }
+    institutionsWithMostActivity {
+      institution {
+        id
+        name
+        level {
+          level
+        }
+      }
+      electionCount
+      voteCount
+      averageTurnout
+      mostActiveElection {
+        id
+        name
+        totalVotesCast
+      }
+    }
+  }
+`;
+
+
+export const DASHBOARD_STATS = gql`
+  query DashboardStats {
+    dashboardStats {
+      totalElections
+      activeElections
+      completedElections
+      upcomingElections
+      totalVoters
+      totalVotesCast
+      voterTurnout
+      recentElections {
+        id
+        name
+        status
+        startDatetime
+        endDatetime
+        totalVoters
+        totalVotesCast
+        institution {
+          name
+        }
+      }
+      activeElectionsWithStats {
+        election {
+          id
+          name
+          institution {
+            name
+          }
+        }
+        stats {
+          totalVoters
+          totalVotesCast
+          voterTurnout
+          leadingCandidate {
+            id
+            student {
+              user {
+                firstName
+                lastName
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const SUBSCRIBE_TO_ACTIVE_ELECTIONS = gql`
+  subscription SubscribeToActiveElections {
+    activeElectionUpdated {
+      id
+      name
+      status
+      totalVotesCast
+      statistics {
+        totalVoters
+        totalVotesCast
+        voterTurnout
+        leadingCandidate {
+          id
+          student {
+            user {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
     }
   }
 `;
