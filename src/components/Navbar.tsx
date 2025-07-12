@@ -56,7 +56,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Link to="/" className="text-2xl font-bold text-[#FFE31A] hover:animate-pulse transition duration-300">
-              CampusVote
+              Udom CampusVote
             </Link>
           </div>
 
